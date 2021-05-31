@@ -1,0 +1,24 @@
+diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules/@vue/cli-service/lib/util/getAssetPath.js 
+--- node_modules/@vue/cli-service/lib/options.js.orig	1985-10-26 17:15:00.000000000 +0900
++++ node_modules/@vue/cli-service/lib/options.js	2021-05-28 13:16:35.000000000 +0900
+@@ -1,6 +1,7 @@
+ const { createSchema, validate } = require('@vue/cli-shared-utils')
+ 
+ const schema = createSchema(joi => joi.object({
++  disableAssetsSubdir: joi.boolean(),
+   publicPath: joi.string().allow(''),
+   outputDir: joi.string(),
+   assetsDir: joi.string().allow(''),
+diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules/@vue/cli-service/lib/util/getAssetPath.js
+--- node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig	1985-10-26 17:15:00.000000000 +0900
++++ node_modules/@vue/cli-service/lib/util/getAssetPath.js	2021-05-28 13:18:51.000000000 +0900
+@@ -1,6 +1,9 @@
+ const path = require('path')
+ 
+ module.exports = function getAssetPath (options, filePath) {
++  if (options.disableAssetsSubdir === true) {
++    filePath = filePath.replace(/^css\//, '').replace(/^js\//, '')
++  }
+   return options.assetsDir
+     ? path.posix.join(options.assetsDir, filePath)
+     : filePath
