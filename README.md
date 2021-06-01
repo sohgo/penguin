@@ -1,17 +1,34 @@
 症例候補の初期入力のプロトタイプ
 ================================
 
-./dbmain.py db.conf.json
-PEN_CONFIG_FILE=db.conf.json uvicorn dbmain:app --port 8082 
+## 起動方法
 
+MongoDBをローカルに動かす。
+
+```
+./dbmain.py db.conf.json
 ./femain.py fe.conf.json
+```
+
+```
+PEN_CONFIG_FILE=db.conf.json uvicorn dbmain:app --port 8082 
 PEN_CONFIG_FILE=fe.conf.json uvicorn femain:app --port 8081 
+```
+
+## Google Accountでのメールの設定
+
+- Googleのアカウントを作る。
+- Googleアカウント→セキュリティ→安全性に低いアプリのアクセス
+    →アクセスを有効にする。
+- Gmail→設定→すべての設定を表示→メール転送とPOP/IMAP→変更を保存
 
 ## Build
 
 npmはインストール済みとします。
 
+```
 sh build.sh
+```
 
 build.shは 各step1,step2に対して下記コマンドを実行しています。
 
@@ -57,3 +74,6 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
 ## TODO
 
 - requirements.txtを作る。
+- docker化
+- 国際化
+

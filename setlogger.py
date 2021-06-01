@@ -1,7 +1,9 @@
+import logging
+
 LOG_FORMAT = "%(asctime)s.%(msecs)d %(lineno)d %(levelname)s %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
-def set_logger(logging, prog_name=None, log_file=None, logging_stdout=False,
+def set_logger(prog_name=None, log_file=None, logging_stdout=False,
                debug_mode=False):
     def get_logging_handler(channel):
         channel.setFormatter(logging.Formatter(fmt=LOG_FORMAT,
@@ -14,7 +16,6 @@ def set_logger(logging, prog_name=None, log_file=None, logging_stdout=False,
     #
     # set logger.
     #   log_file: a file name for logging.
-    #logging.basicConfig()
     logger = logging.getLogger(prog_name)
     if logging_stdout is True:
         logger.addHandler(get_logging_handler(logging.StreamHandler()))

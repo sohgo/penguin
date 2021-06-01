@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-import asyncio
 from dbconf import set_config
-from uvicorn import Config, Server
+import asyncio
 from dbapi import api
 
 def log_start(config):
@@ -14,17 +13,17 @@ def log_start(config):
                                config.server_port))
 
 if __name__ == "__main__":
-    import uvicorn
+    from uvicorn import Config, Server
     loop = asyncio.new_event_loop()
-    config = set_config(loop, sys.argv[1:])
+    config = set_config("pendb", loop, sys.argv[1:])
     log_start(config)
-    config = Config(app=api(config),
-                host=config.server_address,
-                port=config.server_port,
-                ssl_certfile=config.server_cert if config.server_cert else None,
-                loop=loop,
-                debug=config.enable_debug)
-    server = Server(config)
+    server = Server(Config(app=api(config),
+                           host=config.server_address,
+                           port=config.server_port,
+                           ssl_certfile=config.server_cert
+                               if config.server_cert else None,
+                           loop=config.loop,
+                           debug=config.enable_debug))
     config.loop.run_until_complete(server.serve())
 else:
     loop = asyncio.get_event_loop()

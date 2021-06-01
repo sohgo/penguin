@@ -9,8 +9,9 @@ import motor.motor_asyncio
 
 def api(config):
 
-    app = FastAPI()
     logger = config.logger
+
+    app = FastAPI()
 
     x_client = motor.motor_asyncio.AsyncIOMotorClient(config.mongodb_url,
                                                       io_loop=config.loop)

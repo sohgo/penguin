@@ -14,7 +14,9 @@ from xtoken_map import XTokenMap
 STEP1_INDEX_FILE = "ui/step1/dist/index.html"
 STEP2_INDEX_FILE = "ui/step2/dist/index.html"
 
-def api(config, logger):
+def api(config):
+
+    logger = config.logger
 
     fastapi_kwargs = {}
     #fastapi_kwargs = dict(docs_url=None, redoc_url=None, openapi_url=None)

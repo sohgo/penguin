@@ -1,0 +1,3 @@
+[submodule "codeNwords"]
+	path = codeNwords
+	url = https://github.com/tanupoo/codeNwords.git

@@ -1,10 +1,9 @@
 from pydantic import BaseModel, Extra
 from pydantic import validator
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Any
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from os import environ
 from setlogger import set_logger
-import logging
 import json
 
 class confModel(BaseModel):
@@ -18,6 +17,8 @@ class confModel(BaseModel):
     server_port: int
     server_cert: Union[str, None]
     enable_tls: bool = True      # overwrite later.
+    logger: Any
+    loop: Any
 
     @validator("enable_tls", always=True)
     def update_enable_tls(cls, v, values, config, **kwargs):
@@ -52,7 +53,7 @@ def __get_env_bool(key, default):
     else:
         raise ValueError(f"ERROR: {key} must be bool, but {c}")
 
-def set_config(args=None):
+def set_config(prog_name, loop, args=None):
     """
     priority order
         1. cli arguments.
@@ -68,14 +69,16 @@ def set_config(args=None):
     except Exception as e:
         print("ERROR: {} read error. {}".format(config_file, e))
         exit(1)
+    # set logger
+    config.logger = set_logger(prog_name,
+                               log_file=config.log_file,
+                               logging_stdout=config.log_stdout,
+                               debug_mode=config.enable_debug)
     # overwrite the config by the cli options/env variable.
     config.enable_debug = __get_env_bool("PEN_ENABLE_DEBUG", False)
     config.log_stdout = __get_env_bool("PEN_LOG_STDOUT", False)
-    # update config.
-    logger = set_logger(logging, prog_name="penfe", log_file=config.log_file,
-                        logging_stdout=config.log_stdout,
-                        debug_mode=config.enable_debug)
-    return config, logger
+    config.loop = loop
+    return config
 
 if __name__ == "__main__":
     import sys
