@@ -24,6 +24,8 @@ class PenDBStep1Model(BaseModel):
     pid: str = Field(min_length=64, max_length=64)
     xpath: str
     tsStep1: datetime
+    c3w_code: str
+    c3w_words: str
     name: str
     kana: str
     birthM: str
@@ -51,10 +53,10 @@ class PenDBStep2Model(PenRESTStep2Model, PenDBStep1Model):
     """
     PenDBStep1Model +
     tsStep2: 最初にStep2の情報が書き込まれたタイムスタンプ
-    tsUpdated: 情報が更新された日付。更新されていく。
+    tsUpdate: 情報が更新された日付。更新されていく。
     """
     tsStep2: datetime
-    tsUpdated: Optional[datetime]
+    tsUpdate: Optional[datetime]
 
     class Config:
         extra = Extra.forbid
