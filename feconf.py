@@ -12,7 +12,8 @@ class confModel(BaseModel):
     log_stdout: bool = False
     enable_debug: bool = False
     tz: str = "Asia/Tokyo"
-    be_api_url: str
+    db_api_url: str
+    mm_api_url: str
     server_address: str
     server_port: int
     server_cert: Union[str, None]
