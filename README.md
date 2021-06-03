@@ -100,3 +100,4 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
 406:
 トークンの有効期限が切れています。恐れ入りますが、初めからやり直して下さい。
 
+エラーで戻るボタン
