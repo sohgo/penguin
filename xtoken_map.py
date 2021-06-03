@@ -6,6 +6,7 @@ from random import random
 xpath and token map.
     - generate token.
     - validate token.
+    - remove token if validated.
     - house keeping the map.
 """
 class XTokenMap():
@@ -46,27 +47,41 @@ class XTokenMap():
         self._housekeeping()
         token = self._gen_token()
         now = datetime.now()
-        self.xtmap.update({token: {"xpath": xpath, "accessed": now}})
+        self.xtmap.update({
+                    token: {
+                        "xpath": xpath,
+                        "accessed": now
+                    }
+                })
         return token
 
     def validate_token(self, token, xpath=None):
+        """
+        validate token.
+        remove token if successful.
+        """
         self._housekeeping()
         v = self.xtmap.get(token)
         if v is not None:
             if xpath is not None:
                 if xpath == v["xpath"]:
+                    self.remove_token(token)
                     return True
                 else:
                     return False
             else:
+                self.remove_token(token)
                 return True
         else:
             return False
 
     def remove_token(self, token):
+        """
+        remove entry indicated by token.
+        """
         for k in list(self.xtmap.keys()):
             if k == token:
-                del(k)
+                self.xtmap.pop(k)
                 break
         else:
             raise ValueError
@@ -80,6 +95,7 @@ if __name__ == "__main__":
     t1 = xtmap.generate_token()
     print(xtmap.validate_token(t1))
     print(xtmap.validate_token("5ecd5c301ac34bca3a57709edf3e1e9e07f9fcc07369bd989141951e12df8e45"))
+    xtmap.remove_token(t1)
     #
     xtmap = XTokenMap(limit=5, hard_limit=10)
     for i in range(15):
