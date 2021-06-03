@@ -18,6 +18,7 @@ class confModel(BaseModel):
     server_port: int
     server_cert: Union[str, None]
     enable_tls: bool = True      # overwrite later.
+    status_report_interval: int = 600   # 10 minutes
     logger: Any
     loop: Any
 

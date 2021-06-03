@@ -41,7 +41,7 @@ def api(config):
     # status reporter
     async def status_reporter():
         while True:
-            await asyncio.sleep(5) # XXX
+            await asyncio.sleep(config.status_report_interval)
             logger.info(f"STATUS: nb_token={xtmap.counts()}")
 
     config.loop.create_task(status_reporter())
