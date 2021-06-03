@@ -15,7 +15,7 @@ class Config(BaseModel):
     enable_debug: bool = False
     tz: str = "Asia/Tokyo"
     server_address: str
-    server_port: int = 8082
+    server_port: Optional[int]
     server_cert: Union[str, None]
     enable_tls: bool = False
     logger: Any
