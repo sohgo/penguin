@@ -15,6 +15,16 @@ PEN_CONFIG_FILE=db.conf.json uvicorn dbmain:app --port 8082
 PEN_CONFIG_FILE=fe.conf.json uvicorn femain:app --port 8081 
 ```
 
+## コンフィグ
+
+server_address
+
+macの場合
+
+IPv6/IPv4: ""
+IPv6のみ: "::"
+IPv4のみ: "0.0.0.0"
+
 ## Google Accountでのメールの設定
 
 - Googleのアカウントを作る。
@@ -76,4 +86,17 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
 - requirements.txtを作る。
 - docker化
 - 国際化
+- 画面系
+    リターンで次のフィールドへ
+- 画面側のエラー処理
+
+422:
+システムでエラーが起きました。恐れ入りますが、時間を置いてやり直して下さい。
+
+500:
+-1:
+システムで致命的なエラーが起きました。対応いたしますので、時間を置いてやり直して下さい。
+
+406:
+トークンの有効期限が切れています。恐れ入りますが、初めからやり直して下さい。
 
