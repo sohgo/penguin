@@ -87,7 +87,11 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
 - docker化
 - 国際化
 - 画面系
-    リターンで次のフィールドへ
+    + リターンで次のフィールドへ
+    + 誕生日の日付チェック
+        * 2/31 を弾くなど。
+    + エラーの時に、戻るボタン
+- modelのサンプルの見直し
 - 画面側のエラー処理
 
 422:
@@ -100,4 +104,3 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
 406:
 トークンの有効期限が切れています。恐れ入りますが、初めからやり直して下さい。
 
-エラーで戻るボタン

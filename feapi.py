@@ -7,11 +7,13 @@ from fastapi.exceptions import RequestValidationError
 from typing import Optional, List
 from modelREST import PenRESTStep1Model, PenRESTStep1AckModel
 from modelREST import PenRESTStep2AuthModel, PenRESTStep2Model
+from modelDB import PenDBStep1Model, PenDBStep2Model, HIDDEN_FIELDS
 from modelMM import PenMMRESTRequestModel
 import asyncio
 import aiohttp
 import aiofile
 import util
+from random import randint
 from xtoken_map import XTokenMap
 import codeNwords
 
@@ -136,10 +138,14 @@ def api(config):
         c3w = cwm.gencode()
         in_json["c3w_code"] = c3w["code"]
         in_json["c3w_words"] = c3w["words"]
+        # generate auth code.
+        in_json["authcode"] = "-".join([str(randint(1000,9999))
+                                        for i in range(3)])
+        # tiny check
+        PenDBStep1Model.parse_obj(in_json)
         # submitting
         logger.debug(f"POST DB: trying: {in_json}")
         url = f"{config.db_api_url}/1"
-        out_json = jsonable_encoder(in_data)
         status, content = await util.post_item(url, in_json,
                                                enable_tls=config.enable_tls)
         if status != httpcode.HTTP_201_CREATED:
@@ -155,8 +161,7 @@ def api(config):
             raise HTTPException(status_code=httpcode.HTTP_502_BAD_GATEWAY,
                                 detail=f"accepted, but error on mail.")
         # reply json
-        # XXX with xpath if successful.
-        # XXX 別パス認証が必要ならばここでxpathは返すべきではない。
+        out_json = jsonable_encoder(in_data)
         out_json["xpath"] = in_json["xpath"]
         return out_json
 
@@ -191,12 +196,11 @@ def api(config):
         # check if the key contents were valid.
         if not (content["birthM"] == in_data.birthM and
                 content["birthD"] == in_data.birthD and
-                content["favColor"] == in_data.favColor):
+                content["authcode"] == in_data.authcode):
             raise HTTPException(status_code=httpcode.HTTP_406_NOT_ACCEPTABLE,
                                 detail=f"not acceptable")
-        # remove and add fields the response according to the model.
-        for k in [ "pid", "tsStep1", "tsStep2", "tsUpdate", "tsStep3",
-                  "c3w_code", "c3w_words" ]:
+        # remove hidden fields from the response.
+        for k in HIDDEN_FIELDS:
             k in content and content.pop(k)
         return content
 
@@ -213,8 +217,10 @@ def api(config):
         xpath = in_json["xpath"]
         old_json = await validate_token_and_get_item(x_csrf_token, xpath)
         # fix the hidden fields to submit.
-        in_json["pid"] = old_json["pid"]
-        in_json["tsStep1"] = old_json["tsStep1"]
+        for k in HIDDEN_FIELDS:
+            if k in old_json:
+                in_json[k] = old_json[k]
+        # update special fields.
         # if tsStep2 doesn't exist or its value is None,
         # it's first time to update this step2 item.
         # otherwise, update tsUpdate.
@@ -223,11 +229,9 @@ def api(config):
         else:
             in_json["tsStep2"] = old_json["tsStep2"]
             in_json["tsUpdate"] = util.get_timestamp(config.tz)
-        # copy tsStep3, c3w_code, c3w_words if exists.
-        for k in [ "tsStep3", "c3w_code", "c3w_words" ]:
-            if k in old_json:
-                in_json[k] = old_json[k]
-        #
+        # tiny check
+        PenDBStep2Model.parse_obj(in_json)
+        # submitting
         logger.debug(f"POST DB: trying: {in_json}")
         url = f"{config.db_api_url}/2"
         status, content = await util.post_item(url, in_json,

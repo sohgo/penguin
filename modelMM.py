@@ -6,7 +6,7 @@ class PenMMRESTRequestModel(BaseModel):
     name: str
     xpath: str
     emailAddr: str
-    c3w_code: str
+    authcode: str
     c3w_words: str
 
     class Config:

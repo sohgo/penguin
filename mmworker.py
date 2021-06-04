@@ -75,7 +75,9 @@ async def _sendmsg(
 
 クリックすると認証画面が表示されますので、
 初期登録で入力した {request.name} 様の
-誕生日の月日と色を入力して下さい。
+誕生日の月日と下記の認証コードを入力して下さい。
+
+    {request.authcode}
 
 その後、行動履歴を入力する画面に進みます。
 
@@ -135,7 +137,11 @@ async def _sendmsg(
 
     </div>
         初期登録で入力した {request.name} 様の
-        誕生日の月日と色を入力して下さい。
+        誕生日の月日と下記の認証コードを入力して下さい。
+    </div>
+
+    <div class="focus">
+        {request.authcode}
     </div>
 
     <div>
