@@ -77,19 +77,21 @@ def api(config):
 
     def validate_token(
             token: str,
-            xpath: Optional[str] = None
+            xpath: Optional[str] = None,
+            remove_token: bool = True,
             ) -> None:
         """
         validate token and raise an exception if not valid.
         """
-        if not xtmap.validate_token(token, xpath):
+        if not xtmap.validate_token(token, xpath, remove_token):
             logger.error(f"Not acceptable token: token={token} xpath={xpath}")
             raise HTTPException(status_code=httpcode.HTTP_406_NOT_ACCEPTABLE,
                                 detail=f"token not acceptable")
 
     async def validate_token_and_get_item(
             token: str,
-            xpath: str
+            xpath: str,
+            remove_token: bool = True,
             ) -> dict:
         """
         validation of token and xpath.
@@ -98,7 +100,7 @@ def api(config):
         """
         logger.debug(f"validate token: {token}")
         # raise an exception if token is not valid.
-        validate_token(token, xpath)
+        validate_token(token, xpath, remove_token)
         return await get_item_by_xpath(xpath)
 
     #
@@ -192,7 +194,8 @@ def api(config):
         in_json = jsonable_encoder(in_data)
         logger.debug(f"APP auth_access: {in_json}")
         xpath = in_json["xpath"]
-        content = await validate_token_and_get_item(x_csrf_token, xpath)
+        content = await validate_token_and_get_item(x_csrf_token, xpath,
+                                                    remove_token=False)
         # check if the key contents were valid.
         if not (content["birthM"] == in_data.birthM and
                 content["birthD"] == in_data.birthD and
@@ -236,7 +239,7 @@ def api(config):
         url = f"{config.db_api_url}/2"
         status, content = await util.post_item(url, in_json,
                                                enable_tls=config.enable_tls)
-        if status == httpcode.HTTP_201_CREATED:
+        if status == httpcode.HTTP_200_OK:
             # just return in_data as it is.
             return jsonable_encoder(in_data)
         else:
