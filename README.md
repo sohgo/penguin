@@ -84,8 +84,10 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
 ## TODO
 
 - requirements.txtを作る。
+- 可能なら)QRコードで認証コードをスキップする。(セキュリティ要検討)
 - トークンをbodyに入れる。
     + ヘッダだとSPAで使い回すので、途中をボットにいたずらされる。
+- メールに署名する。
 - docker化
 - 国際化
 - 画面系
@@ -105,4 +107,5 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
 
 406:
 トークンの有効期限が切れています。恐れ入りますが、初めからやり直して下さい。
+
 
