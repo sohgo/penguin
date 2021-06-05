@@ -8,6 +8,7 @@ build()
     npm install
     patch -p 0 -i ../vue-cli.patch
     alias vue=`pwd`/node_modules/@vue/cli/bin/vue.js
+    cp -r ../common src/
     npm run build
 }
 
