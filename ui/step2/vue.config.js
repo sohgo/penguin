@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
     transpileDependencies: [
         'vuetify'
@@ -5,5 +7,5 @@ module.exports = {
     disableAssetsSubdir: true,
     publicPath: process.env.NODE_ENV === 'production'
         ? '/2'
-        : '/',
-}
+        : '/'
+};

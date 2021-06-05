@@ -19,8 +19,8 @@
         <v-main class="white">
             <div class="ma-3">
                 <h3 class="my-3">
-                    あなたの氏名、誕生月日、<br>
-                    好みの色を入力して下さい。
+                    あなたの氏名と誕生月日<br>
+                    を入力して下さい。
                 </h3>
 
                 <v-divider id="hr-balck"></v-divider>
@@ -34,11 +34,6 @@
                                     class="mt-3"
                                 v-model="formData.name"
                                 :rules="inputRequired"
-                                required
-                                ></v-text-field>
-                    <v-text-field label="ふりがな"
-                                v-model="formData.kana"
-                                :rules="kanaRules"
                                 required
                                 ></v-text-field>
                     <v-row>
@@ -66,13 +61,6 @@
                                     :rules="emailAddrRules"
                                     required
                                     ></v-text-field>
-                    <v-select label="好みの色"
-                                class="mb-3"
-                            v-model="formData.favColor"
-                            :items="favColorsList"
-                            :rules="selectRequired"
-                            required
-                            ></v-select>
                 </v-form>
 
                 <v-btn class="pa-5"
@@ -91,7 +79,7 @@
 </template>
 
 <script>
-import utils from '@/utils.js'
+import utils from '@/common/utils.js'
 
 export default {
     components: {
@@ -99,23 +87,13 @@ export default {
     data() {
         return {
             valid: false,
-            birthYList: utils.yearsList(),
             birthMList: utils.monthsList,
             birthDList: utils.daysList,
-            favColorsList: utils.colorsList,
             // Rules
             inputRequired: [utils.inputRequired],
             selectRequired: [utils.selectRequired],
-            kanaRules: [utils.kanaRequired],
             emailAddrRules: [utils.emailAddrCheck],
-            formData: {
-                name: '',
-                kana: '',
-                birthM: '',
-                birthD: '',
-                emailAddr: '',
-                favColor: '',
-            },
+            formData: {}
         }
     },
     methods: {

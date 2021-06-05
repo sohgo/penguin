@@ -3,6 +3,7 @@
         <v-main class="pa-5 basecolor basefont">
 
             <h2 class="pb-5">
+                登録できました。<br>
                 ブラウザを閉じて下さい。
             </h2>
 

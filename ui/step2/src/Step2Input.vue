@@ -59,13 +59,6 @@
                                     disabled
                                     >
                     </v-text-field>
-                    <v-text-field label="ふりがな"
-                                    v-model="formData.kana"
-                                    :rules="kanaRules"
-                                    disabled
-                                    required
-                                    >
-                    </v-text-field>
                     <v-row class="">
                         <v-col>生年月日</v-col>
                     </v-row>
@@ -108,16 +101,6 @@
                                     required
                                     >
                     </v-text-field>
-                    <!-- 好みの色 -->
-                    <v-select label="好みの色"
-                                class=""
-                                v-model="formData.favColor"
-                                :items="favColorsList"
-                                :rules="selectRequired"
-                                disabled
-                                required
-                                >
-                    </v-select>
                     <!-- 国籍 -->
                     <v-select label="国籍"
                                 class=""
@@ -150,7 +133,7 @@
 </template>
 
 <script>
-import utils from '@/utils.js'
+import utils from '@/common/utils.js'
 
 export default {
     data() {
@@ -159,7 +142,6 @@ export default {
             birthYList: utils.yearsList(),
             birthMList: utils.monthsList,
             birthDList: utils.daysList,
-            favColorsList: utils.colorsList,
             // 発症日, option
             onsetYList: utils.yearsList().filter((y)=>(/(202[012])/.test(y.value))),
             onsetMList: utils.monthsList,
@@ -169,7 +151,6 @@ export default {
             inputRequired: [utils.inputRequired],
             selectRequired: [utils.selectRequired],
             postcodeRules: [utils.postcodeCheck],
-            kanaRules: [utils.kanaRequired],
             emailAddrRules: [utils.emailAddrCheck],
             // form data
             formData: {},

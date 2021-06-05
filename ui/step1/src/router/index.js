@@ -3,8 +3,8 @@ import VueRouter from 'vue-router'
 import Beginning from '@/Beginning'
 import Step1Input from '@/Step1Input'
 import Step1End from '@/Step1End'
-import Error from '@/Error'
-import NotFound from '@/NotFound'
+import Error from '@/common/Error'
+import NotFound from '@/common/NotFound'
 
 Vue.use(VueRouter)
 

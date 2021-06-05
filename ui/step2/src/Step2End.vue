@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import utils from '@/utils.js'
+import utils from '@/common/utils.js'
 
 export default {
     methods: {
@@ -71,7 +71,10 @@ export default {
             //
             let url = `${process.env.VUE_APP_SERVER_URL}/2`
             let response = await utils.async_post(url, this.$store.state.formData)
+            console.log(`RES: ${response.code}`)
             if (response.code == 200) {
+                // 成功したら、それ以降の操作を無効にするためにxpathを消す。
+                this.formData.xpath = ''
                 this.$router.push('/End')
             } else {
                 this.$store.commit('updateResponseData', response)

@@ -6,8 +6,8 @@ import AuthError from '@/AuthError'
 import Step2Input from '@/Step2Input'
 import Step2End from '@/Step2End'
 import End from '@/End'
-import Error from '@/End'
-import NotFound from '@/NotFound'
+import Error from '@/common/Error'
+import NotFound from '@/common/NotFound'
 
 Vue.use(VueRouter)
 
