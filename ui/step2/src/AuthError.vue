@@ -2,9 +2,9 @@
     <v-app>
         <v-main class="pa-5 basecolor basefont">
 
-            <h2 class="pb-5">
+            <h3 class="pb-5">
                 認証エラー
-            </h2>
+            </h3>
 
             <v-divider id="hr-white"></v-divider>
 

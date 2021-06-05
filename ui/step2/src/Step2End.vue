@@ -21,10 +21,10 @@
         <v-main class="basecolor basefont">
             <div class="mx-5">
 
-                <h2 class="mb-5">
+                <h3 class="mb-5">
                     ありがとうございました。<br>
                     これで初期設定は終了です。
-                </h2>
+                </h3>
 
                 <v-divider id="hr-white"></v-divider>
 
@@ -73,10 +73,11 @@ export default {
             let response = await utils.async_post(url, this.$store.state.formData)
             console.log(`RES: ${response.code}`)
             if (response.code == 200) {
-                // 成功したら、それ以降の操作を無効にするためにxpathを消す。
-                this.formData.xpath = ''
+                // 成功したら以降の操作を無効にするためにformDataを消す。
+                this.$store.state.formData = {}
                 this.$router.push('/End')
             } else {
+                // エラーの場合、responseを保存する。要考察。
                 this.$store.commit('updateResponseData', response)
                 this.$router.push('/Error')
             }

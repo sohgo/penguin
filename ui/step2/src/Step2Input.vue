@@ -4,9 +4,14 @@
                    elevation="0"
                    dense
                    app>
+            <v-btn icon to="/">
+                <v-icon class="white--text"
+                    link
+                    >mdi-arrow-left</v-icon>
+            </v-btn>
             <v-spacer></v-spacer>
             <v-app-bar-title>
-                個人情報の設定
+                個人情報の入力１
             </v-app-bar-title>
             <v-spacer></v-spacer>
         </v-app-bar>
@@ -160,7 +165,7 @@ export default {
         nextPage: function() {
             if (this.$refs.baseform.validate()) {
                 this.$store.commit('updateFormData', this.formData)
-                this.$router.push('/Step2End')
+                this.$router.push('/Step2Input02')
             }
         },
     },

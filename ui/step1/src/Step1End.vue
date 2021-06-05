@@ -2,10 +2,10 @@
     <v-app>
         <v-main class="pa-5 basecolor basefont">
 
-            <h2 class="pb-5">
+            <h3 class="pb-5">
                 初期情報を登録いたしました。<br>
                 ご協力ありがとうございます。
-            </h2>
+            </h3>
 
             <v-divider id="hr-white"></v-divider>
 
@@ -42,9 +42,7 @@
 export default {
     methods: {
         toDetailInput: function() {
-            let xpath = this.$store.state.formData.xpath
-            let url = `${process.env.VUE_APP_SERVER_URL}/2/x/${xpath}`
-            location.href = url
+            location.href = this.$store.state.url
         },
     },
 }

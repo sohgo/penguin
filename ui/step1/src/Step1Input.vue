@@ -11,7 +11,7 @@
             </v-btn>
             <v-spacer></v-spacer>
             <v-app-bar-title>
-                個人情報の設定
+                登録の開始
             </v-app-bar-title>
             <v-spacer></v-spacer>
         </v-app-bar>
@@ -102,9 +102,12 @@ export default {
                 let url = `${process.env.VUE_APP_SERVER_URL}/1`
                 let response = await utils.async_post(url, this.formData)
                 if (response.code == 201 && response.data.xpath) {
-                    this.$store.state.formData.xpath = response.data.xpath
+                    this.$store.state.url = `${process.env.VUE_APP_SERVER_URL}/2/x/${response.data.xpath}`
+                    // 成功したら以降の操作を無効にするためにformDataを消す。
+                    this.$store.state.formData = {}
                     this.$router.push('/Step1End')
                 } else {
+                    // エラーの場合、responseを保存する。要考察。
                     this.$store.commit('updateResponseData', response)
                     this.$router.push('/Error')
                 }

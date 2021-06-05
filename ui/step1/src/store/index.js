@@ -7,6 +7,7 @@ export default new Vuex.Store({
     state: {
         formData: {},
         responseData: {},
+        url: '',
     },
     mutations: {
         updateFormData(state, payload) {
