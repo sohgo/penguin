@@ -55,7 +55,7 @@ class XTokenMap():
                 })
         return token
 
-    def validate_token(self, token, xpath=None):
+    def validate_token(self, token, xpath=None, remove_token=False):
         """
         validate token.
         remove token if successful.
@@ -65,12 +65,14 @@ class XTokenMap():
         if v is not None:
             if xpath is not None:
                 if xpath == v["xpath"]:
-                    self.remove_token(token)
+                    if remove_token is True:
+                        self.remove_token(token)
                     return True
                 else:
                     return False
             else:
-                self.remove_token(token)
+                if remove_token is True:
+                    self.remove_token(token)
                 return True
         else:
             return False
