@@ -84,6 +84,8 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
 ## TODO
 
 - requirements.txtを作る。
+- トークンをbodyに入れる。
+    + ヘッダだとSPAで使い回すので、途中をボットにいたずらされる。
 - docker化
 - 国際化
 - 画面系
