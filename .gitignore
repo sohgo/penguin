@@ -1,5 +1,6 @@
-ui/step1/src/components
-ui/step2/src/components
+ui/step?/src/common
+ui/step?/src/views
+ui/step?/src/assets
 
 .DS_Store
 node_modules
