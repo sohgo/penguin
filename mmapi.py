@@ -6,7 +6,6 @@ from typing import Optional, List, Union
 from modelMM import PenMMRESTRequestModel, PenMMRESTStatusModel
 import dateutil.parser
 import asyncio
-import motor.motor_asyncio
 from mmworker import SendMessage
 
 def api(config):
