@@ -56,6 +56,7 @@ async def _sendmsg(
     qrcode_raw = buf.getvalue()
     buf.close()
     qrcode_b64 = b64encode(qrcode_raw).decode()
+    config.logger.debug("sendmsg: generating qrcode done.")
 
     #
     # mail
@@ -188,6 +189,7 @@ async def _sendmsg(
     msg_img = MIMEImage(qrcode_raw)
     msg_img.add_header("Content-ID", "<qrcode.png>")
     mime_msg.attach(msg_img)
+    config.logger.debug("sendmsg: generating message done.")
 
     # send mail.
     # NOTE: use_tls must be False if starttls is used.
@@ -199,6 +201,7 @@ async def _sendmsg(
     # XXX TBD
     context.verify_mode = ssl.CERT_NONE
     await smtp.starttls(tls_context=context)
+    config.logger.debug("sendmsg: starttls done.")
     await smtp.login(config.mail_username, config.mail_password)
     await smtp.send_message(mime_msg)
     await smtp.quit()
