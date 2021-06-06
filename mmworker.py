@@ -32,7 +32,12 @@ class SendMessage():
         while True:
             # queue the request, and return True if successful.
             request = await self.config.queue.get()
-            ret = await _sendmsg(self.config, request)
+            try:
+                ret = await _sendmsg(self.config, request)
+                self.config.logger.info(
+                        f"message for Step2 sent to {request.emailAddr}")
+            except Exception as e:
+                self.config.logger.error(f"sendmsg: {e}")
 
 async def _sendmsg(
         config: PenMMConfigModel,
