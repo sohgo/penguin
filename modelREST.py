@@ -92,6 +92,9 @@ class PenRESTStep2Model(PenRESTStep1AckModel):
     postcode: Optional[str]
     addrPref: Optional[str]
     addrCity: Optional[str]
+    pregnant: Optional[bool]
+    smoker: Optional[bool]
+    smokerDetail: Optional[str]
     # XXX needs to add more fields.
 
     @validator("birthY")
