@@ -10,7 +10,7 @@ export default new Vuex.Store({
     },
     mutations: {
         updateFormData(state, payload) {
-            state.formData = payload
+            state.formData = Object.assign({}, state.formData, payload)
         },
         updateResponseData(state, payload) {
             state.responseData = payload

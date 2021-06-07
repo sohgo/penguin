@@ -4,18 +4,6 @@
                    elevation="0"
                    dense
                    app>
-            <v-btn icon to="/BaseInput">
-                <v-icon class="white--text"
-                    link
-                    >mdi-arrow-left</v-icon>
-            </v-btn>
-            <!--
-            <v-spacer></v-spacer>
-            <v-app-bar-title>
-                個人情報の設定
-            </v-app-bar-title>
-            <v-spacer></v-spacer>
-            -->
         </v-app-bar>
 
         <v-main class="basecolor basefont">
@@ -46,14 +34,15 @@
                         また、今後毎日の体温や体調についても共有して頂きます。
                         こちらもご協力をよろしくお願いいたします。
                     </div>
+
                 </div>
 
                 <v-btn class="pa-5"
                         color="white"
-                        @click="submitData"
+                        @click="closeWindow"
                         block
                         >
-                    <span class="pa-2 black--text font-large">完了</span>
+                    <span class="pa-2 black--text font-large">ウィンドウを閉じる</span>
                 </v-btn>
 
             </div>
@@ -62,26 +51,11 @@
 </template>
 
 <script>
-import utils from '@/common/utils.js'
+//import utils from '@/common/utils.js'
 
 export default {
     methods: {
-        submitData: async function() {
-            // XXX この部分は他の入力の最後に持っていくべき。
-            //
-            let url = `${process.env.VUE_APP_SERVER_URL}/2`
-            let response = await utils.async_post(url, this.$store.state.formData)
-            console.log(`RES: ${response.code}`)
-            if (response.code == 200) {
-                // 成功したら以降の操作を無効にするためにformDataを消す。
-                this.$store.state.formData = {}
-                this.$router.push('/End')
-            } else {
-                // エラーの場合、responseを保存する。要考察。
-                this.$store.commit('updateResponseData', response)
-                this.$router.push('/Error')
-            }
-        }
+        closeWindow: function() {}
     }
 }
 </script>

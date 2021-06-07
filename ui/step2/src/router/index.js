@@ -4,6 +4,7 @@ import Entry from '@/Entry'
 import Auth from '@/Auth'
 import AuthError from '@/AuthError'
 import Step2Input from '@/Step2Input'
+import Step2Input02 from '@/Step2Input02'
 import Step2End from '@/Step2End'
 import End from '@/End'
 import Error from '@/common/Error'
@@ -31,6 +32,11 @@ const routes = [
         path: '/Step2Input',
         name: 'Step2Input',
         component: Step2Input
+    },
+    {
+        path: '/Step2Input02',
+        name: 'Step2Input02',
+        component: Step2Input02
     },
     {
         path: '/Step2End',
