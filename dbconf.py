@@ -6,7 +6,7 @@ from os import environ
 from setlogger import set_logger
 import json
 
-class Config(BaseModel):
+class PenDBConfigModel(BaseModel):
     db_name: str = "patients"
     table_name: str = "entry"
     mongodb_url: str = "mongodb://127.0.0.1:27017/apitest?retryWrites=true&w=majority"
@@ -66,7 +66,7 @@ def set_config(prog_name, loop, args=None):
     # load the config file.
     config_file = environ["PEN_CONFIG_FILE"]
     try:
-        config = Config.parse_obj(json.load(open(config_file)))
+        config = PenDBConfigModel.parse_obj(json.load(open(config_file)))
     except Exception as e:
         print("ERROR: {} read error. {}".format(config_file, e))
         exit(1)
@@ -84,5 +84,5 @@ def set_config(prog_name, loop, args=None):
 if __name__ == "__main__":
     import sys
     conf = json.load(open(sys.argv[1]))
-    m = Config.parse_obj(conf)
+    m = PenDBConfigModel.parse_obj(conf)
     print(m)

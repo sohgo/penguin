@@ -6,7 +6,7 @@ from os import environ
 from setlogger import set_logger
 import json
 
-class confModel(BaseModel):
+class PenFeConfigModel(BaseModel):
     origins: List[str] = []
     log_file: str
     log_stdout: bool = False
@@ -67,7 +67,7 @@ def set_config(prog_name, loop, args=None):
     # load the config file.
     config_file = environ["PEN_CONFIG_FILE"]
     try:
-        config = confModel.parse_obj(json.load(open(config_file)))
+        config = PenFeConfigModel.parse_obj(json.load(open(config_file)))
     except Exception as e:
         print("ERROR: {} read error. {}".format(config_file, e))
         exit(1)
@@ -85,5 +85,5 @@ def set_config(prog_name, loop, args=None):
 if __name__ == "__main__":
     import sys
     conf = json.load(open(sys.argv[1]))
-    m = confModel.parse_obj(conf)
+    m = PenFeConfigModel.parse_obj(conf)
     print(m)
