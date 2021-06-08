@@ -60,20 +60,21 @@
                                     class="mt-3"
                                     v-model="formData.name"
                                     :rules="inputRequired"
-                                    required
                                     disabled
                                     >
                     </v-text-field>
                     <v-row class="">
                         <v-col>生年月日</v-col>
+                        <template v-slot:append-outer>
+                            <v-badge content="必須" color="red" overlap>
+                        </template>
                     </v-row>
                     <v-row class="pt-0 mt-0">
                         <v-col>
                             <v-select label="年"
-                                    v-model="formData.birthY"
+                                    v-model.lazy="formData.birthY"
                                     :items="birthYList"
                                     :rules="selectRequired"
-                                    required
                                     >
                             </v-select>
                         </v-col>
@@ -83,7 +84,6 @@
                                     :items="birthMList"
                                     :rules="selectRequired"
                                     disabled
-                                    required
                                     >
                             </v-select>
                         </v-col>
@@ -93,7 +93,6 @@
                                     :items="birthDList"
                                     :rules="selectRequired"
                                     disabled
-                                    required
                                     >
                             </v-select>
                         </v-col>
@@ -101,9 +100,9 @@
                     <!-- メールアドレス -->
                     <v-text-field label="メールアドレス"
                                     class="mt-3"
-                                    v-model="formData.emailAddr"
+                                    v-model.lazy="formData.emailAddr"
                                     :rules="emailAddrRules"
-                                    required
+                                    disabled
                                     >
                     </v-text-field>
                     <!-- 国籍 -->
@@ -116,11 +115,15 @@
                     <!-- 郵便番号 -->
                     <v-text-field class=""
                                     label="郵便番号"
-                                    v-model="formData.postcode"
+                                    v-model.lazy="formData.postcode"
                                     :rules="postcodeRules"
                                     >
                     </v-text-field>
                 </v-form>
+
+                <h3 color="red">
+                    ((続きの質問などが入る))
+                </h3>
 
                 <v-btn class="pa-5"
                        color="#03AF7A"

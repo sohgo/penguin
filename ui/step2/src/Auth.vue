@@ -34,19 +34,17 @@
                         <v-col class="mt-3">誕生月日</v-col>
                         <v-col class="mt-0">
                             <v-select label="月"
-                                    v-model="formData.birthM"
+                                    v-model.lazy="formData.birthM"
                                     :items="birthMList"
                                     :rules="selectRequired"
-                                    required
                                     >
                             </v-select>
                         </v-col>
                         <v-col class="mt-0">
                             <v-select label="日"
-                                    v-model="formData.birthD"
+                                    v-model.lazy="formData.birthD"
                                     :items="birthDList"
                                     :rules="selectRequired"
-                                    required
                                     >
                             </v-select>
                         </v-col>
@@ -56,16 +54,15 @@
                     <v-row class="mt-3">
                         <v-col class="mt-3 mx-0">認証コード</v-col>
                     </v-row>
-                    <v-row class="mx-1 mt-0"> 
+                    <v-row class="mx-1 mt-0 my-4"> 
 
                         <v-col class="pa-0 ma-0 accol">
                             <v-text-field
                                 class="text-h6 acfield"
                                 ref="ac1"
-                                v-model="ac1"
+                                v-model.lazy="ac1"
                                 :rules="acRequired"
                                 placeholder="0000"
-                                required
                                 >
                             </v-text-field>
                         </v-col>
@@ -74,10 +71,9 @@
                             <v-text-field
                                 class="text-h6 acfield"
                                 ref="ac2"
-                                v-model="ac2"
+                                v-model.lazy="ac2"
                                 :rules="acRequired"
                                 placeholder="0000"
-                                required
                                 >
                             </v-text-field>
                         </v-col>
@@ -86,10 +82,9 @@
                             <v-text-field
                                 class="text-h6 acfield"
                                 ref="ac3"
-                                v-model="ac3"
+                                v-model.lazy="ac3"
                                 :rules="acRequired"
                                 placeholder="0000"
-                                required
                                 >
                             </v-text-field>
                         </v-col>

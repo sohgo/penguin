@@ -31,35 +31,31 @@
                         lazy-validation
                         >
                     <v-text-field label="氏名"
-                                    class="mt-3"
-                                v-model="formData.name"
+                                class="mt-3"
+                                v-model.lazy="formData.name"
                                 :rules="inputRequired"
-                                required
                                 ></v-text-field>
                     <v-row>
                         <v-col class="mt-3">誕生月日</v-col>
                         <v-col>
                             <v-select label="月"
-                                    v-model="formData.birthM"
+                                    v-model.lazy="formData.birthM"
                                     :items="birthMList"
                                     :rules="selectRequired"
-                                    required
                                     ></v-select>
                         </v-col>
                         <v-col>
                             <v-select label="日"
-                                    v-model="formData.birthD"
+                                    v-model.lazy="formData.birthD"
                                     :items="birthDList"
                                     :rules="selectRequired"
-                                    required
                                     ></v-select>
                         </v-col>
                     </v-row>
                     <v-text-field label="メールアドレス"
                                     class="mt-3"
-                                    v-model="formData.emailAddr"
+                                    v-model.lazy="formData.emailAddr"
                                     :rules="emailAddrRules"
-                                    required
                                     ></v-text-field>
                 </v-form>
 
