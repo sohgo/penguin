@@ -73,3 +73,16 @@ class PenDBStep2Model(PenRESTStep2Model, PenDBStep1Model):
             }
         }
 
+"""
+--- GET /x/c3ww/xxx-xxxx-xxxx --->
+<--- HTTP 200 OK PenDBStep2Model ---
+--- POST /3 PenDBStep3UpdateModel -->
+<--- HTTP 200 OK PenDBStep2Model ---
+"""
+class PenDBStep3UpdateModel(BaseModel):
+    pid: str
+    tsStep3: datetime
+
+    class Config:
+        extra = Extra.forbid
+
