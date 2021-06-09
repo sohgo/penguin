@@ -173,11 +173,9 @@ def api(config):
         logger.debug(f"GET STEP1 LIST")
         items = await x_tab.find(
                 { "$and" : [
-                        { "tsStep1": { "$exists": True } },
-                        { "$or": [
-                                { "tsStep2": { "$exists":False } },
-                                { "tsStep2": None },
-                                ] } ] }
+                        { "tsStep1": { "$ne": None } },
+                        { "tsStep2": None }
+                        ] }
                 ).sort([("tsStep1",-1)]).limit(100).to_list(100)
         logger.debug(f"RET: count={len(items)}")
         if items:
@@ -198,11 +196,9 @@ def api(config):
         logger.debug(f"GET STEP2 LIST")
         items = await x_tab.find(
                 { "$and" : [
-                        { "tsStep2": { "$exists": True } },
-                        { "$or": [
-                                { "tsStep3": { "$exists":False } },
-                                { "tsStep3": None },
-                                ] } ] }
+                        { "tsStep2": { "$ne": None } },
+                        { "tsStep3": None }
+                        ] }
                 ).sort([("tsStep2",-1)]).limit(100).to_list(100)
         logger.debug(f"RET: count={len(items)}")
         if items:
@@ -223,11 +219,9 @@ def api(config):
         logger.debug(f"GET STEP3 LIST")
         items = await x_tab.find(
                 { "$and" : [
-                        { "tsStep3": { "$exists": True } },
-                        { "$or": [
-                                { "tsStep4": { "$exists":False } },
-                                { "tsStep4": None },
-                                ] } ] }
+                        { "tsStep3": { "$ne": None } },
+                        { "tsStep4": None }
+                        ] }
                 ).sort([("tsStep3",-1)]).limit(100).to_list(100)
         logger.debug(f"RET: count={len(items)}")
         if items:
