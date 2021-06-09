@@ -121,8 +121,11 @@ class PenRESTStep2Model(PenRESTStep1AckModel):
 
     @validator("birthY")
     def validate_date(cls, birthY, values):
-        date(int(birthY), int(values["birthM"]), int(values["birthD"]))
-        return birthY
+        if birthY is None:
+            return birthY
+        else:
+            date(int(birthY), int(values["birthM"]), int(values["birthD"]))
+            return birthY
 
     @classmethod
     def validate_strnum(cls, v, size):
