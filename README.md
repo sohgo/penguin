@@ -86,6 +86,7 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
 - common
     + トークンをbodyに入れる。
         * ヘッダだとSPAで使い回すので、途中をボットにいたずらされる。
+    + util.get,postを見直す。
 - 認証
     + reCAPTCHAv3の検討
     + 1度認証されたら次回はlocalstorageから初められるようにする。(要検討)
