@@ -40,13 +40,7 @@ def api(config):
         )
     async def post_step1(in_data: PenDBStep1Model = Body(...)):
         logger.debug(f"APP POST STEP1:")
-        # XXX STEP1でメールアドレスの重複をゆるすかどうか？
-        # 間違いや再登録などで消してから登録し直すと手間がかかるので、
-        # 同じメールアドレスで登録を許したほうがよいかと思われる。
-        # ひとまず pid,xpathの重複だけをチェックする。
-        # DOS対策としては
-        # - N個まで許すとか？
-        # - システム側でチェックしてアラートを出すとか？
+        # See IMPLEMENTATION.md
         pid = in_data.pid
         xpath = in_data.xpath
         result = await x_tab.count_documents({"$id":[
@@ -101,21 +95,6 @@ def api(config):
         logger.debug(f"APP POST STEP2:")
         pid = in_data.pid
         xpath = in_data.xpath
-        """
-        emailAddr = in_data.emailAddr
-        result = await x_tab.find( {"emailAddr": emailAddr} )
-        logger.debug(f"RES: count={len(result)}")
-        if len(result) == 0:
-            msg = f"POST STEP2: not exist: for {pid}, {xpath}, or {emailAddr}."
-            logger.error(msg)
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail=f"{msg}")
-        elif len(result) != 1:
-            msg = f"POST STEP2: multiple items exist: for {pid}, {xpath}, or {emailAddr}."
-            logger.error(msg)
-            raise HTTPException(status_code=500,
-                                detail=f"{msg}")
-        """
         # post the info.
         in_json = jsonable_encoder(in_data)
         logger.debug(f"find_one_and_replace: trying: {in_json}")
