@@ -95,7 +95,7 @@ def api(config):
         status_code=status.HTTP_200_OK,
         response_model=PenDBStep2Model
         )
-    async def get_entry_by_c3ww(xpath: str):
+    async def get_entry_by_c3ww(c3w_words: str):
         logger.debug(f"APP GET c3w_words: {c3w_words}")
         item = await x_tab.find_one({"c3w_words": c3w_words})
         logger.debug(f"RET: {item}")
