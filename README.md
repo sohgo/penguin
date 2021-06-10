@@ -3,19 +3,31 @@
 
 ## 起動方法
 
-MongoDBをローカルに動かす。
+1. dockerを[使う](https://github.com/tanupoo/proto-pen-docker)。
+2. dockerを使わない。ドキュメントが足りてないのでおすすめしません。
+
+### dockerを使わない。
+
+- MongoDBをローカルに動かす。
+- 下記4つのモジュールを動かす。
+    + femain.py
+    + mmmain.py
+    + dbmain.py
+    + admmain.py
+
+起動方法は2通り。
 
 ```
-./dbmain.py db.conf.json
-./femain.py fe.conf.json
+./xxmain.py xx.conf.json
 ```
 
 ```
-PEN_CONFIG_FILE=db.conf.json uvicorn dbmain:app --port 8082 
-PEN_CONFIG_FILE=fe.conf.json uvicorn femain:app --port 8081 
+PEN_CONFIG_FILE=xx.conf.json uvicorn xxmain:app --port 808x 
 ```
 
 ## コンフィグ
+
+TBD
 
 server_address
 
@@ -27,14 +39,19 @@ IPv4のみ: "0.0.0.0"
 
 ## Google Accountでのメールの設定
 
-- Googleのアカウントを作る。
-- Googleアカウント→セキュリティ→安全性に低いアプリのアクセス
-    →アクセスを有効にする。
-- Gmail→設定→すべての設定を表示→メール転送とPOP/IMAP→変更を保存
+- mmmain.py からメールを送信するため、どこかにメールサーバが必要になる。
+- 例えば、gmailが使える。
+    + Googleのアカウントを作る。
+    + Googleアカウント→セキュリティ→安全性に低いアプリのアクセス
+        →アクセスを有効にする。
+    + Gmail→設定→すべての設定を表示→メール転送とPOP/IMAP→変更を保存
 
-## Build
+## UIのビルド
 
-npmはインストール済みとします。
+ここからなぜか、ですます調😱
+
+- uiの下で行います。
+- npmはインストール済みとします。
 
 ```
 sh build.sh
@@ -81,32 +98,3 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
      : filePath
 ```
 
-## TODO
-
-- common
-    + トークンをbodyに入れる。
-        * ヘッダだとSPAで使い回すので、途中をボットにいたずらされる。
-    + util.get,postを見直す。
-- 認証
-    + reCAPTCHAv3の検討
-    + 1度認証されたら次回はlocalstorageから初められるようにする。(要検討)
-- penmm
-    + 送信完了ログを出す
-    + メールに署名する。
-        * 難しい。検証も難しい。メールシステムは破綻している。あきらめるか。
-- ui
-    + 可能なら)QRコードで認証コードをスキップする。(セキュリティ要検討)
-    + リターンで次のフィールドへ
-    + 誕生日の日付チェック
-        * 2/31 を弾くなど。
-    + エラーの時に、戻るボタン
-    + 画面側のエラー処理
-        * 422:システムでエラーが起きました。恐れ入りますが、時間を置いてやり直して下さい。
-        * 500: -1:システムで致命的なエラーが起きました。対応いたしますので、時間を置いてやり直して下さい。
-        * 406:トークンの有効期限が切れています。恐れ入りますが、初めからやり直して下さい。
-- code
-    + modelのサンプルの見直し
-- docker
-    + linux headers, gcc, package list の削除
-- future
-    + 国際化
