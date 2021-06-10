@@ -122,3 +122,27 @@
 - tsStep4が30日以上前なら削除する。
     + データの保存期限が切れた。
 
+## Adminのフロー
+
+保健師がダウンロードするフロー
+```
+    Client                      Admサーバ
+      --- HTTP /dl/3-word-code -->
+      <-- PenAdmDownloadResponseModel ---
+```
+
+研究サーバにコピーするフロー
+```
+    Client                      Admサーバ
+      <-- POST /copy PenAdmCopyReqModel --
+      --- HTTP 200 OK -->
+```
+
+統計情報を取得するフロー
+```
+    Client                      Admサーバ
+      --- GET /stat -->
+      <-- PenAminStatAckModel ---
+```
+
+
