@@ -48,16 +48,14 @@ IPv4のみ: "0.0.0.0"
 
 ## UIのビルド
 
-ここからなぜか、ですます調😱
-
-- uiの下で行います。
-- npmはインストール済みとします。
+- uiの下で行う。
+- npmはインストール済みとする。
 
 ```
 sh build.sh
 ```
 
-build.shは 各step1,step2に対して下記コマンドを実行しています。
+build.shは 各step1,step2に対して下記コマンドを実行している。
 
 ```
 cd ui/step1
@@ -67,9 +65,12 @@ alias vue=`pwd`/node_modules/@vue/cli/bin/vue.js
 npm run build
 ```
 
-patchコマンドが動いていますが、これは disableAssetsSubdirを有効にしています。
-vue-cliのバージョンによってはパッチが当たらない可能性もあります。
-rejectされた場合は、下記2つを手で当ててください。
+patchコマンドは disableAssetsSubdirを有効にしている。
+ビルドする時に、getAssetPath.jsにパスが埋め込みなのを
+無効にしてトップディレクトリに保存するパッチ。
+
+vue-cliのバージョンによってはパッチが当たらない可能性もありえるので、
+rejectされた場合は、下記2つを手で当てる。
 
 ```
 diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules/@vue/cli-service/lib/util/getAssetPath.js 
