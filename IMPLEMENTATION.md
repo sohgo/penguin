@@ -12,6 +12,8 @@
 
 <img alt="pen's components" src="doc/pen-arch-20210611a.png" height="320">
 
+[Docker](https://github.com/tanupoo/proto-pen-docker)を使って動かした場合
+
 ## Step1
 
 - 入力項目
