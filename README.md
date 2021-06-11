@@ -1,6 +1,8 @@
 症例候補の初期入力のプロトタイプ
 ================================
 
+実装メモなどは[IMPLEMENTATION.md](https://github.com/tanupoo/proto-patient-entry/blob/main/IMPLEMENTATION.md)を御覧ください。
+
 ## 起動方法
 
 1. dockerを[使う](https://github.com/tanupoo/proto-pen-docker)。
