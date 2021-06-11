@@ -25,17 +25,19 @@
 PEN_CONFIG_FILE=xx.conf.json uvicorn xxmain:app --port 808x 
 ```
 
+上記 xxは fe, mm, db, adm に置き換える。
+
 ## コンフィグ
 
-TBD
+dockerの[コンフィグ例](https://github.com/tanupoo/proto-pen-docker)を
+参考にする。
 
-server_address
+### server_address
 
-macの場合
-
-IPv6/IPv4: ""
-IPv6のみ: "::"
-IPv4のみ: "0.0.0.0"
+- macの場合
+    + IPv6/IPv4: ""
+    + IPv6のみ: "::"
+    + IPv4のみ: "0.0.0.0"
 
 ## Google Accountでのメールの設定
 
