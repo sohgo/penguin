@@ -14,6 +14,9 @@
 
 [Docker](https://github.com/tanupoo/proto-pen-docker)を使って動かした場合
 
+フローは[こちら](https://docs.google.com/drawings/d/1w4VkZPMz8jnvWTPGRehubjcRTKzPcMMFceEwjbiA9vM/edit)。
+アクセス権が欲しい方は連絡下さい。
+
 ## Step1
 
 - 入力項目
