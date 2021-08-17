@@ -1,4 +1,4 @@
-diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules/@vue/cli-service/lib/util/getAssetPath.js 
+diff -u node_modules/@vue/cli-service/lib/options.js.orig node_modules/@vue/cli-service/lib/options.js
 --- node_modules/@vue/cli-service/lib/options.js.orig	1985-10-26 17:15:00.000000000 +0900
 +++ node_modules/@vue/cli-service/lib/options.js	2021-05-28 13:16:35.000000000 +0900
 @@ -1,6 +1,7 @@
