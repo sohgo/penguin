@@ -52,7 +52,6 @@ dockerの[コンフィグ例](https://github.com/tanupoo/proto-pen-docker)を
 
 ## UIのビルド
 
-- uiの下で行う。
 - npmはインストール済みとする。
 
 ```
@@ -61,8 +60,8 @@ sh build.sh
 
 build.shは 各step1,step2に対して下記コマンドを実行している。
 
-```
-cd ui/step1
+```sh
+cd ui/${step}
 npm install
 patch -p 0 -i ../vue-cli.patch
 alias vue=`pwd`/node_modules/@vue/cli/bin/vue.js
@@ -101,5 +100,15 @@ diff -u node_modules/@vue/cli-service/lib/util/getAssetPath.js.orig node_modules
    return options.assetsDir
      ? path.posix.join(options.assetsDir, filePath)
      : filePath
+```
+
+## UIのデバッグ
+
+- npmはインストール済みとする。
+- 各stepの下に移動して`npm run serve`コマンドを起動する。
+
+```
+cd ui/step2
+npm run serve
 ```
 
