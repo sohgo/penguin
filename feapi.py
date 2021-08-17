@@ -10,7 +10,6 @@ from modelREST import PenRESTStep2AuthModel, PenRESTStep2Model
 from modelDB import PenDBStep1Model, PenDBStep2Model, HIDDEN_FIELDS
 from modelMM import PenMMRESTRequestModel
 import asyncio
-import aiohttp
 import aiofile
 import util
 from random import randint
@@ -66,13 +65,16 @@ def api(config):
         """
         logger.debug(f"get_item_by_xpath: {xpath}")
         url = f"{config.db_api_url}/a/xpath/{xpath}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, ssl=config.enable_tls) as response:
-                content = await response.json()
-                logger.debug(f"RET: code={response.status} data={content}")
-                if response.status != httpcode.HTTP_200_OK:
-                    raise HTTPException(status_code=httpcode.HTTP_404_NOT_FOUND,
-                                        detail=f"xpath not found: {xpath}")
+        status, ctype, content = await util.get_item(
+                url, logger, config.enable_tls)
+        if status != httpcode.HTTP_200_OK:
+            raise HTTPException(status_code=httpcode.HTTP_404_NOT_FOUND,
+                                detail=f"xpath not found: {xpath}")
+        if ctype != "application/json":
+            raise HTTPException(
+                    status_code=httpcode.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"invalid content-type (system)")
+        logger.debug(f"RET: data={content}")
         return content
 
     def validate_token(
