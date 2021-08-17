@@ -68,19 +68,18 @@ def api(config):
             request.client.host not in config.allow_ip_addrs):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail=f"{request.client.host} not allowed")
+        logger.debug(f"get_patient_data: {c3w_words}")
         url = f"{config.db_api_url}/a/c3ww/{c3w_words}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, ssl=config.enable_tls) as response:
-                logger.debug(f"RET: code={response.status} "
-                             f"type={response.content_type}")
-                if response.status != httpcode.HTTP_200_OK:
-                    raise HTTPException(status_code=httpcode.HTTP_404_NOT_FOUND,
-                                    detail=f"c3w_words not found: {c3w_words}")
-                if response.content_type != "application/json":
-                    raise HTTPException(
-                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail=f"invalid content-type (system)")
-                content = await response.json()
+        status, ctype, content = await util.get_item(
+                url, logger, config.enable_tls)
+        if status != httpcode.HTTP_200_OK:
+            raise HTTPException(status_code=httpcode.HTTP_404_NOT_FOUND,
+                                detail=f"c3w_words not found: {c3w_words}")
+        if ctype != "application/json":
+            raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"invalid content-type (system)")
+        logger.debug(f"RET: data={content}")
         # update tsStep3 and post DB
         in_json = {
                 "pid": content["pid"],
