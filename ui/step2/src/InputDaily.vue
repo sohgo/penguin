@@ -788,7 +788,7 @@ export default {
             }
         }
         let baseurl = 'https://maps.googleapis.com/maps/api/js?language=ja&region=JP&libraries=places&callback=window.gmapGlobalInit'
-        let apikey = 'AIzaSyAjhQTlseMbj3VqdBLefjhIIxmQXxAoQno'
+        let apikey = 'APIKEY'
         if (!window.gmapGlobalInit) {
             window.gmapGlobalInit = () => {
                 window.gmapGlobalLoaded = true
