@@ -1,32 +1,46 @@
 <template>
     <v-app>
-        <v-main class="pa-5 basecolor basefont">
 
-            <h3 class="pb-5">
+        <v-app-bar color="#03AF7A" class="text-center"
+                   elevation="0"
+                   dense
+                   app>
+            <v-btn icon @click="movePage(-1)">
+                <v-icon class="white--text"
+                    link
+                >mdi-arrow-left</v-icon>
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-app-bar-title class="white--text">
                 認証エラー
-            </h3>
+            </v-app-bar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon disabled></v-btn>
+        </v-app-bar>
 
-            <v-divider id="hr-white"></v-divider>
+        <v-main>
+            <div class="mx-3 my-5">
+                <h1 class="my-3">
+                    認証エラー
+                </h1>
 
-            <div class="py-3">
-                <div class="my-3">
+                <p>
                     アクセスして頂いたアドレスと、
-                    入力して頂いた生年月日、
-                    または認証コードが一致しません。
-                </div>
+                    認証コードが一致しません。
+                </p>
 
-                <div class="my-3">
+                <p>
                     正しい情報を入力してください。
-                </div>
+                </p>
             </div>
-
         </v-main>
+
     </v-app>
 </template>
 
 <script>
 export default {
-    beforeEach(to, from) {
+    beforeEach: function(to, from) {
         console.log(`to:${to.name} from:${from.name}`)
     }
 }

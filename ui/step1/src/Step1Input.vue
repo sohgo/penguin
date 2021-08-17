@@ -19,7 +19,7 @@
         <v-main class="white">
             <div class="ma-3">
                 <h3 class="my-3">
-                    あなたの氏名と誕生月日<br>
+                    あなたのメールアドレス<br>
                     を入力して下さい。
                 </h3>
 
@@ -30,28 +30,6 @@
                         class="mx-3"
                         lazy-validation
                         >
-                    <v-text-field label="氏名"
-                                class="mt-3"
-                                v-model.lazy="formData.name"
-                                :rules="inputRequired"
-                                ></v-text-field>
-                    <v-row>
-                        <v-col class="mt-3">誕生月日</v-col>
-                        <v-col>
-                            <v-select label="月"
-                                    v-model.lazy="formData.birthM"
-                                    :items="birthMList"
-                                    :rules="selectRequired"
-                                    ></v-select>
-                        </v-col>
-                        <v-col>
-                            <v-select label="日"
-                                    v-model.lazy="formData.birthD"
-                                    :items="birthDList"
-                                    :rules="selectRequired"
-                                    ></v-select>
-                        </v-col>
-                    </v-row>
                     <v-text-field label="メールアドレス"
                                     class="mt-3"
                                     v-model.lazy="formData.emailAddr"

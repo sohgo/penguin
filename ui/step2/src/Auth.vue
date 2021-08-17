@@ -19,7 +19,6 @@
         <v-main class="grey lighten-5">
             <div class="ma-3">
                 <h3 class="my-3">
-                    登録時に入力した誕生月日と、<br>
                     メールでお送りした認証コード<br>
                     （3組の4桁の数字）を<br>
                     入力して下さい。
@@ -30,26 +29,6 @@
                         class="mx-3"
                         lazy-validation
                         >
-                    <v-row>
-                        <v-col class="mt-3">誕生月日</v-col>
-                        <v-col class="mt-0">
-                            <v-select label="月"
-                                    v-model.lazy="formData.birthM"
-                                    :items="birthMList"
-                                    :rules="selectRequired"
-                                    >
-                            </v-select>
-                        </v-col>
-                        <v-col class="mt-0">
-                            <v-select label="日"
-                                    v-model.lazy="formData.birthD"
-                                    :items="birthDList"
-                                    :rules="selectRequired"
-                                    >
-                            </v-select>
-                        </v-col>
-                    </v-row>
-
                     <!-- 認証コード -->
                     <v-row class="mt-3">
                         <v-col class="mt-3 mx-0">認証コード</v-col>
@@ -137,9 +116,10 @@ export default {
                 // submit formData.
                 let url = `${process.env.VUE_APP_SERVER_URL}/a`
                 let response = await utils.async_post(url, this.formData)
+                response.code = 200
                 if (response.code == 200) {
                     this.$store.state.formData = response.data
-                    this.$router.push('/Step2Input')
+                    this.$router.push('/Step2Input1')
                 } else if (response.code == 406) {
                     this.$router.push('/AuthError')
                 } else {

@@ -7,6 +7,7 @@ export default new Vuex.Store({
     state: {
         formData: {},
         responseData: {},
+        activeDate: {}, // for DailyInput
     },
     mutations: {
         updateFormData(state, payload) {
@@ -14,6 +15,9 @@ export default new Vuex.Store({
         },
         updateResponseData(state, payload) {
             state.responseData = payload
+        },
+        updateActiveDate(state, payload) {
+            state.activeDate = payload
         }
     },
     actions: {

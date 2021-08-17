@@ -3,9 +3,12 @@ import VueRouter from 'vue-router'
 import Entry from '@/Entry'
 import Auth from '@/Auth'
 import AuthError from '@/AuthError'
-import Step2Input from '@/Step2Input'
-import Step2Input02 from '@/Step2Input02'
-import Step2End from '@/Step2End'
+import Step2Input1 from '@/Step2Input1'
+import Step2Input2 from '@/Step2Input2'
+import Step2Input3 from '@/Step2Input3'
+import Step2Input4 from '@/Step2Input4'
+import InputDaily from '@/InputDaily'
+import Step2Break from '@/Step2Break'
 import End from '@/End'
 import Error from '@/common/Error'
 import NotFound from '@/common/NotFound'
@@ -29,19 +32,34 @@ const routes = [
         component: AuthError
     },
     {
-        path: '/Step2Input',
-        name: 'Step2Input',
-        component: Step2Input
+        path: '/Step2Input1',
+        name: 'Step2Input1',
+        component: Step2Input1
     },
     {
-        path: '/Step2Input02',
-        name: 'Step2Input02',
-        component: Step2Input02
+        path: '/Step2Input2',
+        name: 'Step2Input2',
+        component: Step2Input2
     },
     {
-        path: '/Step2End',
-        name: 'Step2End',
-        component: Step2End
+        path: '/Step2Input3',
+        name: 'Step2Input3',
+        component: Step2Input3
+    },
+    {
+        path: '/Step2Input4',
+        name: 'Step2Input4',
+        component: Step2Input4
+    },
+    {
+        path: '/InputDaily',
+        name: 'InputDaily',
+        component: InputDaily
+    },
+    {
+        path: '/Step2Break',
+        name: 'Step2Break',
+        component: Step2Break
     },
     {
         path: '/End',

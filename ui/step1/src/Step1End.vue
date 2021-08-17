@@ -3,7 +3,6 @@
         <v-main class="pa-5 basecolor basefont">
 
             <h3 class="pb-5">
-                初期情報を登録いたしました。<br>
                 ご協力ありがとうございます。
             </h3>
 
@@ -11,7 +10,7 @@
 
             <div class="py-3">
                 <div class="my-3">
-                    次に個人情報<br>
+                    次に感染症対策に必要な情報<br>
                     を入力して頂きます。
                 </div>
 
