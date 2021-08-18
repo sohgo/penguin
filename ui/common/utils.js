@@ -40,15 +40,6 @@ const inputRequired = (v) => (!!v || '入力して下さい。')
 
 const selectRequired = (v) => (!!v || '選択して下さい。')
 
-const kanaRequired = (v) => {
-    if (!v) {
-        return 'ふりがなを、入力して下さい。'
-    } else if (!is_kana(v)) {
-        return 'ひらがなで入力して下さい。'
-    } else
-        return true
-}
-
 const emailAddrCheck = (v) => {
     // 本気でチェックするとガチで面倒くさいので程々にやる。
     if (!v) {
@@ -59,6 +50,7 @@ const emailAddrCheck = (v) => {
         return true
 }
 
+/*
 const postcodeCheck = (v) => (
     !v || /[0-9]{3}-[0-9]{4}|[0-9]{7}/.test(v) || '半角数字で入力して下さい。'
 )
@@ -119,32 +111,11 @@ const daysList = [
     { text: '30日', value: '30' },
     { text: '31日', value: '31' },
 ]
+*/
 
-const colorsList = [
-    { text: 'あか', value: 'red' },
-    { text: 'あお', value: 'blue' },
-    { text: 'みどり', value: 'green' },
-    { text: 'きいろ', value: 'yellow' },
-    { text: 'オレンジ', value: 'orange' },
-    { text: 'みずいろ', value: 'cyan' },
-    { text: 'しろ', value: 'white' },
-    { text: 'くろ', value: 'black' },
-]
-
-const is_kana = (s) => {
-    // undefined, false, 0, ''
-    if (!s) return false;
-    if (!s.length) return false
-    if (s == ' ') return false;
-    // ぁ - ん: 0x3041 - 0x3093
-    // ー: 0x30fc
-    /* eslint no-irregular-whitespace: */
-    /* eslint-disable-next-line no-unused-vars */
-    // 全角スペース: 0x3000
-    // 2文字以上に含まれた半角スペースは許容する。
-    // ・:
-    return (/^[ぁ-ゔー\s\u3000・]*$/.test(s))
-}
+const is_phone = (v) => (
+    !v || /^[\d+-]+$/.test(v) || '半角数字で入力して下さい。半角ハイフンがあっても構いません。'
+)
 
 const nationsList = [
     { text: '日本', value: 'Japan' },
@@ -174,17 +145,56 @@ const nationsList = [
     { text: 'Other', value: 'Other' },
 ]
 
+const generatePastDateList = (date_string) => {
+    /*
+    過去14日間の日付の文字列を返す。
+    date_string: YYYY-MM-DD
+    return: {
+        label: <YYYY-MM-DD>,
+        local: <MM年DD>,
+        dayWeek: <(WEEK DAY)>,
+        annotate: <(n日前)>,
+        }
+    */
+    let start_date = new Date(date_string)
+    let ts = start_date.getTime()
+    let dateList = []
+    for (let j = 0; j < 14; j++) {
+        let dto = new Date(ts)
+        let yyyy = '' + dto.getFullYear()
+        let mm = '' + (1 + dto.getMonth())
+        if (mm.length == 1) {
+            mm = '0' + mm
+        }
+        let dd = '' + dto.getDate()
+        if (dd.length == 1) {
+            dd = '0' + dd
+        }
+        let dw = ['日','月','火','水','木','金','土'][dto.getDay()]
+        let annotate = j == 0 ? '発症日' : `${j}日前`
+        dateList.push({
+            label: [yyyy,mm,dd].join('-'),
+            local: `${mm}月${dd}日`,
+            dayWeek: `(${dw})`,
+            annotate: `${annotate}`,  
+            })
+            ts -= 86400000
+    }
+    return dateList
+}
+
 export default {
     async_post,
     inputRequired,
     selectRequired,
-    is_kana,
-    postcodeCheck,
+    is_phone,
     emailAddrCheck,
-    kanaRequired,
+    /*
+    postcodeCheck,
     yearsList,
     monthsList,
     daysList,
-    colorsList,
+    */
     nationsList,
+    generatePastDateList,
 }
