@@ -19,7 +19,7 @@
         <v-main class="grey lighten-5">
             <div class="ma-3">
                 <h3 class="my-3">
-                    メールでお送りした認証コード<br>
+                    お送りした認証コード<br>
                     （3組の4桁の数字）を<br>
                     入力して下さい。
                 </h3>
@@ -68,6 +68,13 @@
                             </v-text-field>
                         </v-col>
                     </v-row>
+                    <!-- メールアドレス -->
+                    <v-text-field
+                        label="メールアドレス"
+                        class="mt-3"
+                        v-model.lazy="formData.emailAddr"
+                        :rules="emailAddrRules"
+                    ></v-text-field>
 
                 </v-form>
 
@@ -102,6 +109,7 @@ export default {
                 v => !!v || '認証コードは必須です。',
                 v => /\d{4}/.test(v) || '4桁の数字を入力して下さい。'
             ],
+            emailAddrRules: [utils.emailAddrCheck],
             formData: {},
             ac1: '',
             ac2: '',
