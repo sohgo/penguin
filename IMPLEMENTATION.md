@@ -98,6 +98,12 @@
     + 坂本先生UIに準ずる。
     + プライバシーに関する情報は除外する。(2021年6月30日追加)
 - PCを共有することも考えられるため、localStorageは使わない。
+- データモデルは下記コードを参照。
+    + ui/step2/src/Step2Input1.vue: formData
+    + ui/step2/src/Step2Input2.vue: formData
+    + ui/step2/src/Step2Input3.vue: formData
+    + ui/step2/src/Step2Input4.vue: formData
+    + ui/step2/src/InputDaily.vue: formData
 
 ## Step3
 
