@@ -115,11 +115,16 @@ export default {
                 /*
                 ## formData.healthRecord
                 - <LABEL>で一意になる健康状態のオブジェクト。
-                - <LABEL>は healthProfile.labelから得る。
+                - <LABEL>と<QUESTION>は healthProfile.labelから得る。
                     + healthProfileは外部から得る。
-                - healthProfileに定義された全てのLABELを保持する。
-                    + チェックした項目だけ保持すると、healthProfileが変更された時に、元の質問がわからなくなるため。
                 - <TEXT>はGUIから入力される。前後の空白文字は削除する。
+                - healthRecordは以下のリストを保持する。
+                    + healthProfileに定義されていて、チェックされた項目。
+                    + healthRecordに含まれていた項目。
+                - healthProfileに定義された全ての項目を持たないと、healthProfileが変更された事がわからなくなるが、簡便さを取る。
+                - questionとtextを保持する。
+                    + textだけだと、質問が変更されると答えと合わなくなるため。
+                - LABELに対して複数の質問があるかもしれないが、textが自由形式なのと、LABELを増やすことで対応してもらう。
                 - データモデル
                     + <TEXT> === null: チェックしていない。
                     + <TEXT> === '': チェックしている, 詳細なし。
@@ -127,8 +132,9 @@ export default {
 
                 formData.healthRecord = {
                     <LABEL> : {
-                        text: <TEXT>,
-                    }, ...
+                            text: <TEXT>,
+                            question: <QUESTION>,
+                        }, ...
                 }
                 */
             sickList: undefined, // healthRecordの作業用オブジェクト
@@ -140,14 +146,16 @@ export default {
             // assuming that the all labels exist in formData.healthRecord.
             if (this.$refs.baseform.validate()) {
                 for (let i = 0; i < this.sickList.length; i++) {
-                    let v = this.sickList[i]
-                    if (v.checked === true) {
-                        this.formData.healthRecord[v.label] = {
-                            text: v.text === null ? '' : v.text
+                    let p = this.sickList[i]
+                    if (p.checked === true) {
+                        this.formData.healthRecord[p.label] = {
+                            text: p.text === null ? '' : p.text,
+                            question: p.question,
                         }
                     } else {
-                        this.formData.healthRecord[v.label] = {
-                            text: null
+                        this.formData.healthRecord[p.label] = {
+                            text: null,
+                            question: p.question,
                         }
                     }
                 }
@@ -165,14 +173,13 @@ export default {
     mounted: function() {
         this.formData = this.$store.state.formData
         if (this.formData.healthRecord === undefined) {
+            // サーバからのデータにhealthRecordがなかった。
             /* initialize sickList */
-            this.formData.healthRecord = {}
-            this.sickList = healthProfile.map(v => {
+            this.formData.healthRecord = {} // initialize
+            this.sickList = healthProfile.map(p => {
                 // add this label into formData.healthRecord here
-                this.formData.healthRecord[v.label] = {
-                    text: null
-                }
-                return Object.assign({}, v, {
+                // create sickList based on healthProfile.
+                return Object.assign({}, p, {
                     checked: false,
                     text: null,
                 })
@@ -180,23 +187,20 @@ export default {
         } else {
             // this.formData.healthRecord !== undefined
             // copy formData.healthRecord into sickList.
-            this.sickList = healthProfile.map(g => {
-                let k = Object.keys(this.formData.healthRecord).filter(x => g.label == x)
+            this.sickList = healthProfile.map(p => {
+                // サーバからhealthRecordを渡された。
+                let k = Object.keys(this.formData.healthRecord).filter(x => p.label == x)
                 if (k.length == 1) {
                     // found the label in formData.healthRecord
-                    let v = this.formData.healthRecord[k]
-                    return Object.assign({}, g, {
-                        checked: v.text !== null ? true : false,
-                        text: v.text,
+                    return Object.assign({}, p, {
+                        checked: k[0].text !== null ? true : false,
+                        text: k[0].text,
                     })
                 } else if (k.length > 1) {
-                    throw `ERROR: k.length = ${k.length}`
+                    throw `ERROR: label=${p.label} k.length = ${k.length}`
                 } else {
-                    // add this label into formData.healthRecord here
-                    this.formData.healthRecord[g.label] = {
-                        text: null
-                    }
-                    return Object.assign({}, g, {
+                    // LABELが存在しなかった。
+                    return Object.assign({}, p, {
                         checked: false,
                         text: null,
                     })
