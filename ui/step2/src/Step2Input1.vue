@@ -60,6 +60,7 @@
                                     v-on="on"
                                     :rules="selectRequired"
                                     ref="onsetDate"
+                                    required
                                 ></v-text-field>
                             </template>
                             <v-date-picker
@@ -146,8 +147,8 @@
                     <!-- 生活 -->
                     <v-select
                             label="共同生活、職場での就寝の有無など"
-                            v-model="formData.residence"
-                            :items="activitySharingList"
+                            v-model="formData.communityLife"
+                            :items="communityLifeList"
                             >
                     </v-select>
 
@@ -190,7 +191,7 @@
                             placeholder="例）何々高校、株式会社何々、何々公民館"
                         ></v-text-field>
                         <v-select label="活動の種類"
-                                v-model="x.kind"
+                                v-model="x.type"
                                 :items="activityFeatureList"
                                 placeholder="リストから選択してください。"
                                 >
@@ -843,7 +844,7 @@ export default {
                 '運動・汗をかく活動・仕事である',
                 'その他',
                 ],
-            activitySharingList: [
+            communityLifeList: [
                 // XXX editable
                 '特になし',
                 '学生寮',
@@ -857,8 +858,24 @@ export default {
             postcodeRules: [utils.postcodeCheck],
             emailAddrRules: [utils.emailAddrCheck],
             phoneRules: [utils.is_phone],
-            // form data
             formData: {},
+                /*
+                ## formData.activities
+                - 活動のプロファイルを表すオブジェクトのリスト
+                    + placename
+                    + type
+                    + profile
+                    + detail
+                - 例
+                formData.activities = [
+                    }
+                        placename: ""
+                        type: ""
+                        profile: ""
+                        detail: ""
+                    {
+                ]
+            */
             activityList: null,
         }
     },
@@ -919,7 +936,7 @@ export default {
         addActivity: function() {
             this.formData.activities.push({
                 placename: '',
-                kind: '',
+                type: '',
                 profile: '',
                 detail: '',
               })
