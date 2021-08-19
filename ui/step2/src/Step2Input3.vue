@@ -146,12 +146,11 @@ export default {
         }
     },
     methods: {
-        submitData: async function() {
+        submitData: async function(url, submitData) {
             // TO BE MERGED, duplicate definitions.
             // assuming that updateFormData() has been called.
             // try to submit data
-            let url = `${process.env.VUE_APP_SERVER_URL}/2`
-            let response = await utils.async_post(url, this.$store.state.formData)
+            let response = await utils.async_post(url, submitData)
             if (response.code == 200) {
                 return true
             } else {
@@ -173,11 +172,18 @@ export default {
                 this.$store.commit('updateFormData', this.formData)
             }
         },
+        createSubmitData: function() {
+            let submitData = JSON.parse(JSON.stringify(this.$store.state.formData))
+            delete(submitData.tmpSickList)
+            delete(submitData.tmpLocationList)
+            // XXX need more work
+            return submitData
+        },
         movePage: function(pageName, doSubmit) {
             if (this.$refs.baseform.validate()) {
                 this.updateFormData()
                 if (doSubmit) {
-                    let response = this.submitData()
+                    let response = this.submitData(`${process.env.VUE_APP_SERVER_URL}/2`, this.createSubmitData())
                     if (response) {
                         this.$router.push(pageName)
                     } else {
@@ -198,7 +204,7 @@ export default {
             this.formData.locations = {}
         }
         // create locationList
-        if (this.locaionList === undefined) {
+        if (this.formData.tmpLocaionList === undefined) {
             this.locationList = []
             for (let i = 0; i < focusedLocations.length; i++) {
                 let place = focusedLocations[i]
@@ -207,11 +213,15 @@ export default {
                     checked: this.formData.locations[place.label] === undefined ? false : true,
                     dateList: utils.generatePastDateList(this.formData.onsetDate).map((v,j) => (
                         {
-                            label: `${v.local} ${v.annotate}`,
+                            date: `${v.local} ${v.annotate}`,
                             checked: this.formData.locations[place.label] === undefined ? false : this.formData.locations[place.label][j]
                         }))
                 })
             }
+            this.formData.tmpLocationList = this.locationList // reference copy
+        } else {
+            // if this.formData.tmpLocationList has data, copy back to sickList.
+            this.locationList = this.formData.tmpLocationList
         }
     },
 }

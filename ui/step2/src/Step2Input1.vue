@@ -953,7 +953,6 @@ export default {
         },
     },
     mounted: function() {
-        console.log('google', window.google)
         this.formData = this.$store.state.formData
         // set activities into activityList for reactivity.
         if (this.formData.activities == undefined) {

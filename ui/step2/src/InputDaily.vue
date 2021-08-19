@@ -492,7 +492,7 @@ export default {
                 return this.dailyAct.detail
             }
         },
-        activeDate: function() {
+        activeDate: function() {    // XXX propsに置き換えるべき
             return this.$store.state.activeDate
         },
         whatLabelList: function() {

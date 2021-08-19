@@ -111,7 +111,7 @@ export default {
     data() {
         return {
             valid: false,
-            formData: {},
+            formData: {}, // reference to $state.formData
                 /*
                 ## formData.healthRecord
                 - <LABEL>で一意になる健康状態のオブジェクト。
@@ -137,7 +137,21 @@ export default {
                         }, ...
                 }
                 */
-            sickList: undefined, // healthRecordの作業用オブジェクト
+            sickList: undefined,
+                // $state.formData.tmpSickList
+                //healthRecordの作業用オブジェクト
+                /*
+                    healthProfile + 
+                    sickList = [
+                        {
+                            label: 
+                            question:
+                            placeholder
+                            checked:
+                            text:
+                        }, ...
+                    ]
+                */
         }
     },
     methods: {
@@ -146,17 +160,14 @@ export default {
             // assuming that the all labels exist in formData.healthRecord.
             if (this.$refs.baseform.validate()) {
                 for (let i = 0; i < this.sickList.length; i++) {
-                    let p = this.sickList[i]
-                    if (p.checked === true) {
-                        this.formData.healthRecord[p.label] = {
-                            text: p.text === null ? '' : p.text,
-                            question: p.question,
+                    let node = this.sickList[i]
+                    if (node.checked === true) {
+                        this.formData.healthRecord[node.label] = {
+                            text: node.text === null ? '' : node.text,
+                            question: node.question,
                         }
                     } else {
-                        this.formData.healthRecord[p.label] = {
-                            text: null,
-                            question: p.question,
-                        }
+                        delete(this.formData.healthRecord[node.label])
                     }
                 }
                 // update formData
@@ -172,40 +183,37 @@ export default {
     },
     mounted: function() {
         this.formData = this.$store.state.formData
+        // initialize healthRecord
         if (this.formData.healthRecord === undefined) {
-            // サーバからのデータにhealthRecordがなかった。
-            /* initialize sickList */
-            this.formData.healthRecord = {} // initialize
-            this.sickList = healthProfile.map(p => {
-                // add this label into formData.healthRecord here
-                // create sickList based on healthProfile.
-                return Object.assign({}, p, {
-                    checked: false,
-                    text: null,
-                })
-            })
-        } else {
-            // this.formData.healthRecord !== undefined
-            // copy formData.healthRecord into sickList.
-            this.sickList = healthProfile.map(p => {
-                // サーバからhealthRecordを渡された。
-                let k = Object.keys(this.formData.healthRecord).filter(x => p.label == x)
+            this.formData.healthRecord = {}
+        }
+        // create sickList
+        if (this.formData.tmpSickList === undefined) {
+            this.sickList = []
+            for (let i = 0; i < healthProfile.length; i++) {
+                let profile = healthProfile[i]
+                let k = Object.entries(this.formData.healthRecord).filter(x => profile.label == x)
                 if (k.length == 1) {
                     // found the label in formData.healthRecord
-                    return Object.assign({}, p, {
+                    this.sickList.push(Object.assign({}, profile, {
                         checked: k[0].text !== null ? true : false,
                         text: k[0].text,
-                    })
+                    }))
                 } else if (k.length > 1) {
-                    throw `ERROR: label=${p.label} k.length = ${k.length}`
+                    throw `ERROR: label=${profile.label} k.length = ${k.length}`
                 } else {
-                    // LABELが存在しなかった。
-                    return Object.assign({}, p, {
+                    // k == []: LABELが存在しなかった。
+                    // k == undefined: サーバからhealthRecordを渡された。
+                    this.sickList.push(Object.assign({}, profile, {
                         checked: false,
                         text: null,
-                    })
+                    }))
                 }
-            })
+            }
+            this.formData.tmpSickList = this.sickList // reference copy
+        } else {
+            // if this.formData.tmpSickList has data, copy back to sickList.
+            this.sickList = this.formData.tmpSickList
         }
     }
 }
