@@ -1,17 +1,18 @@
 症例候補の初期入力のプロトタイプ
 ================================
 
-実装メモなどは[IMPLEMENTATION.md](https://github.com/tanupoo/proto-patient-entry/blob/main/IMPLEMENTATION.md)を御覧ください。
+実装メモなどは[IMPLEMENTATION.md](https://github.com/tanupoo/penguin/blob/main/IMPLEMENTATION.md)を御覧ください。
 
 ## 起動方法
 
-1. dockerを[使う](https://github.com/tanupoo/proto-pen-docker)。
+1. dockerを[使う](https://github.com/tanupoo/penguin-docker)。
 2. dockerを使わない。ドキュメントが足りてないのでおすすめしません。
 
 ### dockerを使わない。
 
 - MongoDBをローカルに動かす。
-- 下記4つのモジュールを動かす。
+- 下記5つのモジュールを動かす。
+    + enmain.py
     + femain.py
     + mmmain.py
     + dbmain.py
@@ -31,7 +32,7 @@ PEN_CONFIG_FILE=xx.conf.json uvicorn xxmain:app --port 808x
 
 ## コンフィグ
 
-dockerの[コンフィグ例](https://github.com/tanupoo/proto-pen-docker)を
+dockerの[コンフィグ例](https://github.com/tanupoo/penguin-docker)を
 参考にする。
 
 ### server_address
