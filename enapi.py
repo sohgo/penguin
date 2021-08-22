@@ -132,8 +132,8 @@ def api(config):
         # reply json
         out_json = jsonable_encoder(in_data)
         out_json["xpath"] = in_json["xpath"]
-        if config.fe_api_url:
-            out_json["redirectHost"] = config.fe_api_url
+        if config.public_fe_url:
+            out_json["redirectHost"] = config.public_fe_url
         return out_json
 
     from fastapi.responses import Response

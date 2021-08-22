@@ -14,7 +14,7 @@ class PenEnConfigModel(BaseModel):
     tz: str = "Asia/Tokyo"
     db_api_url: str
     mm_api_url: str
-    fe_api_url: Union[str, None]
+    public_fe_url: Union[str, None]
     server_address: str
     server_port: int
     server_cert: Union[str, None]
