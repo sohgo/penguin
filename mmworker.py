@@ -44,7 +44,7 @@ async def _sendmsg(
         request: PenMMRESTRequestModel
         ) -> bool:
     #
-    url = f"{config.public_api_url}/2/x/{request.xpath}"
+    url = f"{config.public_fe_url}/2/x/{request.xpath}"
     #
     # QR code
     #

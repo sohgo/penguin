@@ -16,7 +16,7 @@ class PenMMConfigModel(BaseModel):
     mail_subject: str
     mail_sysname: str
     mail_reference: Optional[str]
-    public_api_url: str
+    public_fe_url: str
     server_cert: Optional[str]
     server_address: str
     server_port: Optional[int]
