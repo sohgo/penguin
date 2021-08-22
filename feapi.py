@@ -205,7 +205,5 @@ def api(config):
 
     from fastapi.staticfiles import StaticFiles
     app.mount("/2", StaticFiles(directory="./ui/step2/dist", html=True), name="step2ui")
-    app.mount("/s", StaticFiles(directory="./ui/lib", html=True),
-              name="step2uiLib")
 
     return app
