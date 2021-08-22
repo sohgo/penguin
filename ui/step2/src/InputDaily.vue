@@ -6,7 +6,7 @@
                 dense
                 app
         >
-            <v-btn icon @click="movePage('/Step2Input4')">
+            <v-btn icon @click="movePage('/daily')">
                 <v-icon class="white--text"
                     link
                 >mdi-arrow-left</v-icon>
@@ -116,10 +116,14 @@
                             <!-- いつ -->
                             <v-container v-if="isDailyActReady(dav)">
                                 <v-card-subtitle class="daily-input-section pa-1 white--text">「いつ」</v-card-subtitle>
-                                <div>いつ頃ですか？</div>
+                                <div>
+                                    いつ頃ですか？
+                                    <v-chip color="error" small>必須</v-chip>
+                                </div>
                                 <v-radio-group
                                     v-model="dav.when.label"
                                     @change="changeWhenLabel(dav)"
+                                    required
                                 >
                                     <v-radio class="px-4 ma-0"
                                             v-for="(d, i) in whenList"
@@ -129,7 +133,7 @@
                                             >
                                     </v-radio>
                                 </v-radio-group>
-                                <div>時刻が分かれば入力して下さい。</div>
+                                <div>正確な時刻が分かれば入力して下さい。</div>
                                 <v-menu
                                     :ref="`timeFromPicker${dav.idx}`"
                                     v-model="dav.when.timeFromMenu"
@@ -328,17 +332,17 @@
                 <v-container class="ma-4">
                     <v-row justify="center">
                         <v-btn
-                            class="pa-5 white--text error"
-                            @click="movePage('/Step2Input4', false)"
+                            class="pa-5 mr-2 white--text error"
+                            @click="movePage('/daily', false)"
                         >
                             <span>
-                                破棄する
+                                変更を破棄する
                             </span>
                         </v-btn>
                         <v-btn
-                            class="pa-5 white--text"
+                            class="pa-5 ml-2 white--text"
                             color="#03AF7A"
-                            @click="movePage('/Step2Input4')"
+                            @click="movePage('/daily')"
                         >
                             <span>
                                 保存する
@@ -431,52 +435,54 @@ export default {
     data: () => ({
         // form data
         valid: false,
-        idx: 0, // identifier for refs.
         formData: {},
-        dailyAct: null, // formData.dailyActivity[n] へのポインタ
             /*
-            ## formData.dailyActivity[n]
+            ## formData.dailyActivities[<YYYY-MM-DD>].detail
             - その日の行動を記録したwhat,when,where,whomのリスト
             - データモデル
 
-            formData.dailyActivity[n] = {
-                date: <YYYY-MM-DD>,
-                detail: [
-                    {
-                        opened: false, // true: 開く。false: 閉じる。
-                        // what === undefinedなら、タイトルに'クリックして入力'を表示。
-                        // それ以外なら、
-                        // what.label, when.label, where.tags の順でいずれか1つを表示。
-                        what: {
-                            label: '<LABEL>', // whatList.label
-                            text: '<自由記述>', // 何をしていたか
-                            selected: [],
-                            tags: [ '<TAG>', ... ], // whatList.tags, formDataへコピーしない。
-                        },
-                        when: {
-                            label: '<WHEN>', // whenList.label
-                            timeFrom: 'HH:MM', // whenList.fimrFrom
-                            timeTo: 'HH:MM', // whenList.fimrTo
-                        },
-                        where: {
-                            text: '<自由記述>', // 施設名、何階、部屋名など
-                            address: '<自由記述>', // 住所、google mapから入力可能
-                            // textからsearchKeyに初期入力できていると最高
-                            searchKey: '', // gmapから入力された検索キー
-                            // 以下は候補がいくつかある場合に選択させる場合。
-                            // tags: [ <TAG>, ... ],
-                            // whereList: [ 'label', ...], // whereList.label, formDataへコピーしない。
-                        },
-                        whom: {
-                            attendants: [ <TAG>, ... ], // 誰と, checkbox
-                            numPeople: <TAG>, // 何名くらい, radio button
-                            text: '<自由記述>'
-                        },
-                        comment: '<自由記述>'
-                    }, ...
-                ]
-            }
+            formData.dailyActivities[<YYYY-MM-DD>].detail = [
+                {
+                    idx: // WORKDATA, index to be unique in the detail.
+                    opened: false, // WORKDATA, true: 開く。false: 閉じる。
+                    // what === undefinedなら、タイトルに'クリックして入力'を表示。
+                    // それ以外なら、
+                    // what.label, when.label, where.tags の順でいずれか1つを表示。
+                    what: {
+                        label: '<LABEL>', // whatList.label
+                        text: '<自由記述>', // 何をしていたか
+                        selected: [],
+                        tags: [ '<TAG>', ... ], // WORKDATA, whatList.tags
+                    },
+                    when: {
+                        label: '<WHEN>', // whenList.label
+                        timeFrom: 'HH:MM', // whenList.fimrFrom
+                        timeTo: 'HH:MM', // whenList.fimrTo
+                        timeFromMenu: <BOOL>, // WORKDATA
+                        timeToMenu: <BOOL>, // WORKDATA
+                    },
+                    where: {
+                        text: '<自由記述>', // 施設名、何階、部屋名など
+                        address: '<自由記述>', // 住所、google mapから入力可能
+                        // textからsearchKeyに初期入力できていると最高
+                        searchKey: '', // gmapから入力された検索キー
+                        // 以下は候補がいくつかある場合に選択させる場合。
+                        // tags: [ <TAG>, ... ],
+                        // whereList: [ 'label', ...], // whereList.label, formDataへコピーしない。
+                        gmapDialogMenu: <BOOL>, // WORKDATA
+                        gmo: null,  // WORKDATA, google Map Object
+                        gmg: null,  // WORKDATA, google Map Geocode Object
+                    },
+                    whom: {
+                        attendants: [ <TAG>, ... ], // 誰と, checkbox
+                        numPeople: <TAG>, // 何名くらい, radio button
+                        text: '<自由記述>'
+                    },
+                    comment: '<自由記述>'
+                }, ...
+            ]
             */
+        dayActs: undefined, // workData.dailyActList[n] へのポインタ
 
         /* google map */
         lat: null,
@@ -486,10 +492,10 @@ export default {
     }),
     computed: {
         dailyActDetails: function() {
-            if (this.dailyAct === null) {
+            if (this.dayActs === undefined) {
                 return []
             } else {
-                return this.dailyAct.detail
+                return this.dayActs.detail
             }
         },
         activeDate: function() {    // XXX propsに置き換えるべき
@@ -512,8 +518,7 @@ export default {
         updateFormData: function() {
             if (this.$refs.baseform.validate()) {
                 // XXX more work
-                // update formData
-                this.$store.commit('updateFormData', this.formData)
+                //this.$store.commit('updateFormData', this.formData)
                 return true
             } else {
                 this.check_validity(this.$refs.baseform.$children)
@@ -530,14 +535,18 @@ export default {
             }
         },
         movePage: function(pageName, doSave) {
-            if (doSave) {
-                if (this.$refs.baseform.validate()) {
+            if (this.$refs.baseform.validate()) {
+                // close items.
+                for (let d of this.dayActs.detail) {
+                    d.opened = false
+                }
+                if (doSave) {
                     if (this.updateFormData()) {
                         this.$router.push(pageName)
                     }
+                } else {
+                    this.$router.push(pageName)
                 }
-            } else {
-                this.$router.push(pageName)
             }
         },
         isDailyActReady: function(dav) {
@@ -547,26 +556,35 @@ export default {
             return this.isDailyActReady(dav) ? 'green lighten-5' : 'red lighten-5'
         },
         getCardTitle: function(dav) {
-            return this.isDailyActReady(dav) ? dav.what.label : 'クリックして入力'
+            if (this.isDailyActReady(dav)) {
+                if (dav.when.timeFrom || dav.when.timeTo) {
+                    return `${dav.what.label} ${dav.when.timeFrom} - ${dav.when.timeTo}`
+                } else {
+                    return dav.what.label
+                }
+            } else {
+                return 'クリックして入力'
+            }
         },
         hasDailyActNewEntry: function() {
-            for (let i = 0; i < this.dailyAct.detail.length; i++) {
-                if (this.dailyAct.detail[i].what.label === undefined) {
+            for (let i = 0; i < this.dayActs.detail.length; i++) {
+                if (this.dayActs.detail[i].what.label === undefined) {
                     return true
                 }
             }
             return false
         },
         addDailyActDefault: function() {
-            this.idx += 1
-            this.dailyAct.detail.push({
-                idx: this.idx,
+            // See also newDayAct() in Step2Input4
+            this.dayActs.maxidx += 1
+            this.dayActs.detail.push({
+                idx: this.dayActs.maxidx,
                 opened: false,
                 what: {
                     label: undefined,
                     text: '',
-                    tags: [], // changeWhatLabel()で初期化する。
                     selected: [],
+                    tags: [], // changeWhatLabel()で初期化する。
                 },
                 when: {
                     label: undefined,
@@ -594,13 +612,18 @@ export default {
             })
         },
         removeDailyAct: function(idx) {
-            this.dailyAct.detail.splice(idx, 1)
+            this.dayActs.detail.splice(idx, 1)
             if (!this.hasDailyActNewEntry()) {
                 this.addDailyActDefault()
             }
         },
         changeWhatLabel: function(dav) {
-            dav.what.tags = whatList.filter(v=> v.label == dav.what.label)[0].tags
+            console.log('label', dav.what.label)
+            dav.what.tags = [...
+                whatList.filter(x => x.label === dav.what.label)[0]
+                .tags.filter(x => !dav.what.selected.includes(x))]
+            // 前の「何を」で選択したタグを破棄する。
+            dav.what.selected = []
             // 新規入力用エントリがなければ追加する。
             if (!this.hasDailyActNewEntry()) {
                 this.addDailyActDefault()
@@ -781,14 +804,23 @@ export default {
         let self = this
         function initNext(self) {
             self.formData = self.$store.state.formData
-            self.dailyAct = self.formData.dailyActivities.filter(v=> v.date == self.activeDate)[0]
-            if (self.dailyAct.detail.length === 0) {
-                // set activities into activityList for reactivity.
+            self.workData = self.$store.state.workData
+            // this.workData.dailyActivities must be initialized Step2Input4
+            let ks = Object.keys(self.workData.dailyActivities).filter(k => k === self.activeDate)
+            if (ks.length !== 1) {
+                // Step2Input4で初期化されているので、ks.lengthは常に1。
+                throw `ERROR: label ${self.activeDate} が不正です。`
+            }
+            self.dayActs = self.workData.dailyActivities[ks[0]]
+            console.log('dayActs', self.dayActs)
+            if (!self.hasDailyActNewEntry()) {
+                // set default into dayActs
                 self.addDailyActDefault()
             }
         }
         let baseurl = 'https://maps.googleapis.com/maps/api/js?language=ja&region=JP&libraries=places&callback=window.gmapGlobalInit'
-        let apikey = 'APIKEY'
+        let apikey = document.querySelector('meta[name="X-HKD-GKEY"]').getAttribute('content')
+        //let apikey = 'AIzaSyBr7iMSlLZm3Tl_swQCA5peM-qCOx2jqQI'
         if (!window.gmapGlobalInit) {
             window.gmapGlobalInit = () => {
                 window.gmapGlobalLoaded = true

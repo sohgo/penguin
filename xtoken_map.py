@@ -50,21 +50,28 @@ class XTokenMap():
         self.xtmap.update({
                     token: {
                         "xpath": xpath,
-                        "accessed": now
+                        "accessed": now,
+                        "authed": False,
                     }
                 })
         return token
 
-    def validate_token(self, token, xpath=None, remove_token=False):
+    def validate_token(self, token, xpath=None, remove_token=False,
+                       check_authed=False):
         """
         validate token.
         remove token if successful.
         """
         self._housekeeping()
+        # find the token.
         v = self.xtmap.get(token)
         if v is not None:
             if xpath is not None:
+                # check if xpath is valid.
                 if xpath == v["xpath"]:
+                    if check_authed is True and v["authed"] is False:
+                        # check if authed if needed.
+                        return False
                     if remove_token is True:
                         self.remove_token(token)
                     return True
@@ -77,6 +84,15 @@ class XTokenMap():
         else:
             return False
 
+    def token_set_authed(self, token):
+        """
+        set authed flag.
+        """
+        v = self.xtmap.get(token)
+        if v is None:
+            raise ValueError("token is not valid.")
+        v["authed"] = True
+
     def remove_token(self, token):
         """
         remove entry indicated by token.
@@ -86,7 +102,7 @@ class XTokenMap():
                 self.xtmap.pop(k)
                 break
         else:
-            raise ValueError
+            raise ValueError("token is not valid.")
 
     def counts(self):
         return len(self.xtmap)

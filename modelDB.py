@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr, Extra
 from pydantic import validator
 from typing import Optional
-from modelREST import PenRESTStep2Model
+from modelStep2 import PenRESTStep2Model
 from datetime import datetime
 
 """
@@ -25,9 +25,6 @@ class PenDBStep1Model(BaseModel):
     c3w_code: str
     c3w_words: str
     authcode: str
-    name: str
-    birthM: str
-    birthD: str
     emailAddr: EmailStr
 
     class Config:
@@ -38,16 +35,13 @@ class PenDBStep1Model(BaseModel):
                 "xpath": "dd6fd57989fabca282b257460f8cc9538f7c770e81ef9dc5aaa5e3d7b4d985bd",
                 "authcode": "orange",
                 "tsStep1": "2021-05-18T12:11:35+09:00",
-                "name": "北海太郎",
-                "birthM": "12",
-                "birthD": "25",
                 "emailAddr": "taro@hokkai.do.jp",
             }
         }
 
 class PenDBStep2Model(PenRESTStep2Model, PenDBStep1Model):
     """
-    PenDBStep1Model +
+    PenRESTStep2Model + PenDBStep1Model +
     """
     tsStep2: datetime
     tsUpdate: Optional[datetime]
@@ -62,14 +56,9 @@ class PenDBStep2Model(PenRESTStep2Model, PenDBStep1Model):
                 "xpath": "dd6fd57989fabca282b257460f8cc9538f7c770e81ef9dc5aaa5e3d7b4d985bd",
                 "tsStep1": "2021-05-18T12:11:35+09:00",
                 "tsStep2": "2021-05-21T16:23:48+09:00",
-                "name": "北海太郎",
-                "kana": "ほっかいたろう",
-                "birthM": "12",
-                "birthD": "25",
                 "emailAddr": "taro@hokkai.do.jp",
                 "onsetDate": "2021-05-18",
                 "citizenship": "日本",
-                "postcode": "0100001",
             }
         }
 

@@ -11,7 +11,7 @@
                 入力１
             </v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn icon @click="movePage('/Step2Input2')">
+            <v-btn icon @click="movePage('/input2')">
                 <v-icon class="white--text"
                     link
                 >mdi-arrow-right</v-icon>
@@ -21,7 +21,7 @@
         <v-main>
             <div class="mx-3 my-5">
                 <h1 class="my-3">
-                    あなたのXXX、YYY<br>
+                    あなたの基礎情報<br>
                     についてお伺いします。
                 </h1>
 
@@ -159,7 +159,7 @@
                             >
                     </v-text-field>
                     <v-select label="本人との関係"
-                            :items="['本人', '伴侶', '家族', '親戚', '友人', 'その他']"
+                            :items="['伴侶', '家族', '親戚', '友人', 'その他']"
                             v-model.lazy="formData.attendantRelationship"
                             placeholder="リストから選択してください。"
                             >
@@ -231,7 +231,7 @@
                 <v-btn
                     class="pa-5 white--text"
                     color="#03AF7A"
-                    @click="movePage('/Step2Input2')"
+                    @click="movePage('/input2')"
                     block
                 >
                     <span>
@@ -876,7 +876,7 @@ export default {
                     {
                 ]
             */
-            activityList: null,
+            activityList: undefined,
         }
     },
     computed: {
@@ -909,11 +909,10 @@ export default {
         updateFormData: function() {
             if (this.$refs.baseform.validate()) {
                 // update formData
-                this.$store.commit('updateFormData', this.formData)
+                //this.$store.commit('updateFormData', this.formData)
                 return true
             } else {
                 this.check_validity(this.$refs.baseform.$children)
-                console.log("XXX")
                 return false
             }
         },
@@ -955,7 +954,7 @@ export default {
     mounted: function() {
         this.formData = this.$store.state.formData
         // set activities into activityList for reactivity.
-        if (this.formData.activities == undefined) {
+        if (!this.formData.activities) {
             this.formData.activities = []
             this.activityList = this.formData.activities
             this.addActivity()

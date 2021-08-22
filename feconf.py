@@ -19,6 +19,7 @@ class PenFeConfigModel(BaseModel):
     server_cert: Union[str, None]
     enable_tls: bool = True      # overwrite later.
     status_report_interval: int = 600   # 10 minutes
+    google_apikey: str
     logger: Any
     loop: Any
 
@@ -31,7 +32,7 @@ class PenFeConfigModel(BaseModel):
 
 def __from_args(args):
     ap = ArgumentParser(
-            description="PEN Frontend server.",
+            description="PEN Step2 server.",
             formatter_class=ArgumentDefaultsHelpFormatter)
     ap.add_argument("config_file", metavar="CONFIG_FILE",
                     help="specify the config file.")

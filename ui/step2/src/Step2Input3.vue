@@ -6,7 +6,7 @@
             dense
             app
         >
-            <v-btn icon @click="movePage('/Step2Input2')">
+            <v-btn icon @click="movePage('/input2')">
                 <v-icon class="white--text"
                     link
                 >mdi-arrow-left</v-icon>
@@ -17,7 +17,7 @@
             </v-app-bar-title>
             <v-spacer></v-spacer>
             <!-- ここは将来的にはdisableにする。 -->
-            <v-btn icon @click="movePage('/Step2Break')">
+            <v-btn icon @click="movePage('/break')">
                 <v-icon class="white--text"
                     link
                 >mdi-arrow-right</v-icon>
@@ -79,7 +79,7 @@
                 <v-btn
                     class="white--text"
                     color="#03AF7A"
-                    @click="movePage('/Step2Break', true)"
+                    @click="movePage('/break', true)"
                     block
                 >
                     <h3>
@@ -133,7 +133,7 @@ export default {
                 }
 
                 */
-            locationList: undefined, // work place holder for presenceRecoed
+            locationList: undefined,
                 /*
                 locationList: [
                     {
@@ -146,51 +146,35 @@ export default {
         }
     },
     methods: {
-        submitData: async function(url, submitData) {
-            // TO BE MERGED, duplicate definitions.
-            // assuming that updateFormData() has been called.
-            // try to submit data
-            let response = await utils.async_post(url, submitData)
-            if (response.code == 200) {
-                return true
-            } else {
-                return false
-            }
-        },
         updateFormData: function() {
             if (this.$refs.baseform.validate()) {
-                // copy locationList back into formData
-                for (let i = 0; i < this.locationList.length; i++) {
-                    let place = this.locationList[i]
-                    if (place.checked === true) {
-                        this.formData.locations[place.label] = place.dateList.map((x) => x.checked)
+                // copy workData.locationList back into formData.locations.
+                let w = this.workData.locationList
+                for (let i = 0; i < w.length; i++) {
+                    if (w[i].checked === true) {
+                        this.formData.locations[w[i].label] = w[i].dateList.map((x) => x.checked)
                     } else {
-                        delete(this.formData.locations[place.label])
+                        delete(this.formData.locations[w[i].label])
                     }
                 }
                 // update formData
-                this.$store.commit('updateFormData', this.formData)
+                //this.$store.commit('updateFormData', this.formData)
             }
-        },
-        createSubmitData: function() {
-            let submitData = JSON.parse(JSON.stringify(this.$store.state.formData))
-            delete(submitData.tmpSickList)
-            delete(submitData.tmpLocationList)
-            // XXX need more work
-            return submitData
         },
         movePage: function(pageName, doSubmit) {
             if (this.$refs.baseform.validate()) {
                 this.updateFormData()
                 if (doSubmit) {
-                    let response = this.submitData(`${process.env.VUE_APP_SERVER_URL}/2`, this.createSubmitData())
-                    if (response) {
-                        this.$router.push(pageName)
-                    } else {
-                        // エラーの場合、responseを保存する。要考察。
-                        this.$store.commit('updateResponseData', response)
-                        this.$router.push('/Error')
-                    }
+                    utils.async_post(`${process.env.VUE_APP_SERVER_URL}/2`,
+                        JSON.parse(JSON.stringify(this.formData)))
+                        .then(ret => {
+                            if (ret.code == 200) {
+                                this.$router.push(pageName)
+                            } else {
+                                this.$store.state.ponseData = ret
+                                this.$router.push('/error')
+                            }
+                        })
                 } else {
                     this.$router.push(pageName)
                 }
@@ -199,31 +183,32 @@ export default {
     },
     mounted: function() {
         this.formData = this.$store.state.formData
-        // initialize and locationList
-        if (this.formData.locations === undefined) {
+        this.workData = this.$store.state.workData
+        // initialize formData.
+        if (!this.formData.locations) {
             this.formData.locations = {}
         }
         // create locationList
-        if (this.formData.tmpLocaionList === undefined) {
-            this.locationList = []
+        if (!this.workData.locationList) {
+            this.workData.locationList = []
+            let w = this.workData.locationList
             for (let i = 0; i < focusedLocations.length; i++) {
                 let place = focusedLocations[i]
-                this.locationList.push({
+                let dlist = utils.generatePastDateList(this.formData.onsetDate)
+                    .map((v,j) => ({
+                        date: `${v.local} ${v.annotate}`,
+                        checked: this.formData.locations[place.label] === undefined ? false : this.formData.locations[place.label][j]
+                    }))
+                let checked = this.formData.locations[place.label] === undefined ? false : true
+                w.push({
                     label: place.label,
-                    checked: this.formData.locations[place.label] === undefined ? false : true,
-                    dateList: utils.generatePastDateList(this.formData.onsetDate).map((v,j) => (
-                        {
-                            date: `${v.local} ${v.annotate}`,
-                            checked: this.formData.locations[place.label] === undefined ? false : this.formData.locations[place.label][j]
-                        }))
+                    checked: checked,
+                    dateList: dlist,
                 })
             }
-            this.formData.tmpLocationList = this.locationList // reference copy
-        } else {
-            // if this.formData.tmpLocationList has data, copy back to sickList.
-            this.locationList = this.formData.tmpLocationList
         }
-    },
+        this.locationList = this.workData.locationList
+    }
 }
 </script>
 

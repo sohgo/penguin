@@ -6,7 +6,7 @@ import asyncio
 from feapi import api
 
 def log_start(config):
-    config.logger.info("Starting PEN Frontend server listening on {}://{}:{}/"
+    config.logger.info("Starting PEN Step2 server listening on {}://{}:{}/"
                        .format("https" if config.server_cert else "http",
                                config.server_address if config.server_address
                                else "*",

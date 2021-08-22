@@ -5,7 +5,7 @@
                    elevation="0"
                    dense
                    app>
-            <v-btn icon @click="movePage('/Step2Input3')">
+            <v-btn icon @click="movePage('/input3')">
                 <v-icon class="white--text"
                     link
                 >mdi-arrow-left</v-icon>
@@ -14,7 +14,7 @@
             <v-app-bar-title class="white--text">
             </v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn icon @click="movePage('/Step2Input4')">
+            <v-btn icon @click="movePage('/daily')">
                 <v-icon class="white--text"
                     link
                 >mdi-arrow-right</v-icon>
@@ -27,14 +27,14 @@
 
                 <h1 class="entry mb-3">
                     ありがとうございました。<br>
-                    これで初期設定は終了です。
+                    次に、行動履歴を入力して頂きます。
                 </h1>
 
                 <div class="my-5">
                     <div class="my-3">
                         ここで登録して頂いた情報は
                         保健師から連絡が入る前であれば、
-                        メールまたはSMSでお送りさせて頂いたURLから、
+                        メールでお送りさせて頂いたURLから、
                         いつでも変更ができます。
                     </div>
 
@@ -44,17 +44,12 @@
                         感染拡大防止のため、できるだけ詳しく教えてください。
                     </div>
 
-                    <div class="my-3">
-                        また、今後毎日の体温や体調についても共有して頂きます。
-                        こちらもご協力をよろしくお願いいたします。
-                    </div>
-
                 </div>
 
                 <v-btn
                     class="pa-5"
                     color="white"
-                    @click="movePage('/Step2Input4')"
+                    @click="movePage('/daily')"
                     block
                 >
                     <span class="black--text">

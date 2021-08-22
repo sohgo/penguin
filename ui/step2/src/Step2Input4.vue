@@ -5,7 +5,7 @@
                    elevation="0"
                    dense
                    app>
-            <v-btn icon @click="movePage('/Step2Break')">
+            <v-btn icon @click="movePage('/break')">
                 <v-icon class="white--text"
                     link
                 >mdi-arrow-left</v-icon>
@@ -48,7 +48,7 @@
                 <v-btn
                     class="white--text"
                     color="#03AF7A"
-                    @click="movePage('/Step2End', true)"
+                    @click="movePage('/end', true)"
                     block
                 >
                     <h3>
@@ -65,6 +65,21 @@
 <script>
 import utils from '@/common/utils.js'
 
+const cloneObject = (src) => {
+    let dst, k, v
+    // Object (except null) or others
+    if (typeof src !== 'object' || src === null) {
+        return src
+    }
+    // Array or others
+    dst = Array.isArray(src) ? [] : {}
+    for (k in src) {
+        v = src[k]
+        dst[k] = cloneObject(v)
+    }
+    return dst
+}
+
 export default {
     data() {
         return {
@@ -73,49 +88,79 @@ export default {
             /*
             ## formData.dailyActivities
             - 14日間の行動履歴
-            - dateで一意になる。
-            - 各メンバーの`detail.what !== undefined && detail.what.label !== undefined`の時、'入力済'と表示する。
+            - <YYYY-MM-DD>で一意になる。
+            - 各メンバーの`what !== undefined && what.label !== undefined`の時、'入力済'と表示する。
                 + '60%入力'などと表示するとなおいい。
             - データモデル
 
-            formData.dailyActivities = [
-                {
-                    date: <YYYY-MM-DD>,
+            formData.dailyActivities = {
+                <YYYY-MM-DD> : [], // what,when,where,whomのリスト
+            }
+            */
+            /*
+            workData.dailyActivities = {
+                <YYYY-MM-DD> : {
+                    maxidx: 0,
                     detail: [], // what,when,where,whomのリスト
-                }, ...
-            ]
+                }
+            }
             */
         }
     },
     methods: {
-        submitData: async function() {
-            // TO BE MERGED, duplicate definitions.
-            // assuming that updateFormData() has been called.
-            // try to submit data
-            let url = `${process.env.VUE_APP_SERVER_URL}/2`
-            let response = await utils.async_post(url, this.$store.state.formData)
-            if (response.code == 200) {
-                return true
-            } else {
-                return false
-            }
-        },
         updateFormData: function() {
             // update formData
-            this.$store.commit('updateFormData', this.formData)
+            let fda = this.formData.dailyActivities
+            let wda = this.workData.dailyActivities
+            for (let k in wda) {
+                fda[k] = []
+                for (let i = 0; i < wda[k].detail.length; i++) {
+                    let dayAct = wda[k].detail[i]
+                    if (dayAct.what.label === undefined) {
+                        continue
+                    }
+                    // copy essential items in workData to formData.
+                    let da = {}
+                    da.what = {
+                        label: dayAct.what.label,
+                        text: dayAct.what.text,
+                        selected: dayAct.what.selected,
+                    }
+                    da.when = {
+                        label: dayAct.when.label,
+                        timeFrom: dayAct.when.timeFrom,
+                        timeTo: dayAct.when.timeTo,
+                    }
+                    da.where = {
+                        text: dayAct.where.text,
+                        address: dayAct.where.address,
+                        serachKey: dayAct.where.serachKey,
+                    }
+                    da.whom = {
+                        attendants: dayAct.whom.attendants,
+                        numPeople: dayAct.whom.numPeople,
+                        text: dayAct.whom.text,
+                    }
+                    da.comment = dayAct.comment
+                    fda[k].push(da)
+                }
+            }
+            //this.$store.commit('updateFormData', this.formData)
         },
         movePage: function(pageName, doSubmit) {
             // validationは必要か？
             this.updateFormData()
             if (doSubmit) {
-                let response = this.submitData()
-                if (response) {
-                    this.$router.push(pageName)
-                } else {
-                    // エラーの場合、responseを保存する。要考察。
-                    this.$store.commit('updateResponseData', response)
-                    this.$router.push('/Error')
-                }
+                utils.async_post(`${process.env.VUE_APP_SERVER_URL}/2`,
+                    JSON.parse(JSON.stringify(this.formData)))
+                    .then(ret => {
+                        if (ret.code == 200) {
+                            this.$router.push(pageName)
+                        } else {
+                            this.$store.state.responseData = ret
+                            this.$router.push('/error')
+                        }
+                    })
             } else {
                 this.$router.push(pageName)
             }
@@ -128,26 +173,28 @@ export default {
             }
         },
         goDailyInput: function(date) {
-            this.$store.commit('updateActiveDate', date)
-            this.$router.push('/InputDaily')
+            this.$store.state.activeDate = date
+            this.$router.push('/day')
         },
         getDailyInputStatus: function(label, type) {
-            let results = this.formData.dailyActivities.filter(g => g.date == label)
-            if (results && results.length !== 1) {
+            let ks = Object.keys(this.workData.dailyActivities).filter(k => k === label)
+            if (ks.length !== 1) {
                 throw `ERROR: label ${label} が不正です。`
             }
-            let da = results[0]
-            // da.detail.length
-            //     0: は1度も開いていない。
-            //     1: は1度開いたが「何を」を登録していない。
+            let dayActsDetail = this.workData.dailyActivities[ks[0]].detail
+            // workData.dailyActivities[k].detailのとりうる状態
+            //     - [未入力]: 0件: 1度も開いていない。
+            //     - [入力済]: 1件: 1度開いたが「何を」を登録していない。
+            //     - [入力済,未入力]: 1件
+            let num = dayActsDetail.filter(x => x.what && x.what.label !== undefined).length
             if (type == 'text') {
-                if (da.detail.length > 1) {
-                    return `${da.detail.length-1}件 登録済`
+                if (num > 0) {
+                    return `${num}件 登録済`
                 } else {
                     return '未登録'
                 }
             } else if (type == 'color') {
-                if (da.detail.length > 1) {
+                if (num > 0) {
                     return 'primary'
                 } else {
                     return 'error'
@@ -156,17 +203,63 @@ export default {
                 throw `ERROR: getDailyInputStatus type ${type} が不正です。`
             }
         },
+        newDayAct: function(da) {
+            // copy formData.dailyActivities[k].detail into workData
+            // See InputDaily.vue
+            return {
+                idx: 0, // updated later.
+                opened: false,
+                what: {
+                    label: da.what.label,
+                    text: da.what.text,
+                    selected: da.what.selected,
+                    tags: [], // changeWhatLabel()で初期化する。
+                },
+                when: {
+                    label: da.when.label,
+                    timeFrom: da.when.timeFrom,
+                    timeTo: da.when.timeTo,
+                    timeFromMenu: false,
+                    timeToMenu: false,
+                },
+                where: {
+                    text: da.where.text,
+                    address: da.where.address,
+                    searchKey: da.where.searchKey,
+                    gmapDialogMenu: false,
+                    gmo: null,  // google Map Object
+                    gmg: null,  // google Map Geocode Object
+                },
+                whom: cloneObject(da.whom),
+                comment: '',
+            }
+        },
     },
     mounted: function() {
         this.formData = this.$store.state.formData
-        // set activities into activityList for reactivity.
-        if (this.formData.dailyActivities == undefined) {
-            this.formData.dailyActivities = this.getDateList().map(v=>({
-                date: v.label,
-                detail: []
-            }))
+        this.workData = this.$store.state.workData
+        // initialize formData
+        if (!this.formData.dailyActivities) {
+            this.formData.dailyActivities = {}
         }
-        console.log('formData', this.formData)
+        // create workData.dailyActivities
+        if (!this.workData.dailyActivities) {
+            this.workData.dailyActivities = {}
+            this.getDateList().forEach(v=>{
+                this.workData.dailyActivities[v.label] = {
+                    maxidx: 0, // updated later.
+                    detail: [],
+                }
+            })
+            let fda = this.formData.dailyActivities
+            let wda = this.workData.dailyActivities
+            for (let k in fda) {
+                for (let i = 0; i < fda[k].length; i++) {
+                    wda[k].detail.push(this.newDayAct(fda[k][i]))
+                }
+                wda[k].maxidx = wda[k].detail.length
+            }
+        }
     }
 }
 </script>

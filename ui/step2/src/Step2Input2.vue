@@ -5,7 +5,7 @@
                    elevation="0"
                    dense
                    app>
-            <v-btn icon @click="movePage('/Step2Input1')">
+            <v-btn icon @click="movePage('/input1')">
                 <v-icon class="white--text"
                     link
                 >mdi-arrow-left</v-icon>
@@ -15,7 +15,7 @@
                 入力２
             </v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn icon @click="movePage('/Step2Input3')">
+            <v-btn icon @click="movePage('/input3')">
                 <v-icon class="white--text"
                     link
                 >mdi-arrow-right</v-icon>
@@ -73,7 +73,7 @@
                 <v-btn
                     class="pa-5 white--text"
                     color="#03AF7A"
-                    @click="movePage('/Step2Input3')"
+                    @click="movePage('/input3')"
                     block
                 >
                     <span>
@@ -87,12 +87,13 @@
     </v-app>
 </template>
 
+<!--script src="/s/healthProfile.js" async defer></script-->
 <script>
 //import utils from '@/common/utils.js'
 
 const healthProfile = [
     // 外部から入力
-    {label:'該当しない',question:null,placeholder:'',error:''},
+    {label:'該当しない',question:'',placeholder:'',error:''},
     {label:'妊娠',question:'妊娠何週目ですか？',placeholder:'',error:''},
     {label:'喫煙',question:'何歳から１日あたり何本吸いますか？',placeholder:'例) 20本',error:''},
     {label:'糖尿病',question:'具体的に教えてください',placeholder:'例)2型糖尿病でインスリン注射をしている。',error:''},
@@ -138,7 +139,7 @@ export default {
                 }
                 */
             sickList: undefined,
-                // $state.formData.tmpSickList
+                // $state.workData.sickList
                 //healthRecordの作業用オブジェクト
                 /*
                     healthProfile + 
@@ -156,22 +157,21 @@ export default {
     },
     methods: {
         updateFormData: function() {
-            // copy sickList back into formData.healthRecord
-            // assuming that the all labels exist in formData.healthRecord.
+            // copy workData.sickList back into formData.healthRecord.
             if (this.$refs.baseform.validate()) {
-                for (let i = 0; i < this.sickList.length; i++) {
-                    let node = this.sickList[i]
-                    if (node.checked === true) {
-                        this.formData.healthRecord[node.label] = {
-                            text: node.text === null ? '' : node.text,
-                            question: node.question,
+                let w = this.workData.sickList
+                for (let i = 0; i < w.length; i++) {
+                    if (w[i].checked === true) {
+                        this.formData.healthRecord[w[i].label] = {
+                            text: w[i].text === null ? '' : w[i].text,
+                            question: w[i].question,
                         }
                     } else {
-                        delete(this.formData.healthRecord[node.label])
+                        delete(this.formData.healthRecord[w[i].label])
                     }
                 }
                 // update formData
-                this.$store.commit('updateFormData', this.formData)
+                //this.$store.commit('updateFormData', this.formData)
             }
         },
         movePage: function(pageName) {
@@ -183,38 +183,38 @@ export default {
     },
     mounted: function() {
         this.formData = this.$store.state.formData
+        this.workData = this.$store.state.workData
         // initialize healthRecord
-        if (this.formData.healthRecord === undefined) {
+        if (!this.formData.healthRecord) {
             this.formData.healthRecord = {}
         }
         // create sickList
-        if (this.formData.tmpSickList === undefined) {
-            this.sickList = []
+        if (!this.workData.sickList) {
+            this.workData.sickList = []
+            let w = this.workData.sickList
             for (let i = 0; i < healthProfile.length; i++) {
                 let profile = healthProfile[i]
-                let k = Object.entries(this.formData.healthRecord).filter(x => profile.label == x)
-                if (k.length == 1) {
+                let ks = Object.keys(this.formData.healthRecord).filter(k => k === profile.label)
+                if (ks.length == 1) {
+                    let obj = this.formData.healthRecord[ks[0]]
                     // found the label in formData.healthRecord
-                    this.sickList.push(Object.assign({}, profile, {
-                        checked: k[0].text !== null ? true : false,
-                        text: k[0].text,
+                    w.push(Object.assign({}, profile, {
+                        checked: obj.text !== null ? true : false,
+                        text: obj.text,
                     }))
-                } else if (k.length > 1) {
-                    throw `ERROR: label=${profile.label} k.length = ${k.length}`
+                } else if (ks.length > 1) {
+                    throw `ERROR: label=${profile.label} ks.length = ${ks.length}`
                 } else {
-                    // k == []: LABELが存在しなかった。
-                    // k == undefined: サーバからhealthRecordを渡された。
-                    this.sickList.push(Object.assign({}, profile, {
+                    // ks == []: LABELが存在しなかった。
+                    // ks == undefined: サーバからhealthRecordを渡された。
+                    w.push(Object.assign({}, profile, {
                         checked: false,
                         text: null,
                     }))
                 }
             }
-            this.formData.tmpSickList = this.sickList // reference copy
-        } else {
-            // if this.formData.tmpSickList has data, copy back to sickList.
-            this.sickList = this.formData.tmpSickList
         }
+        this.sickList = this.workData.sickList
     }
 }
 </script>

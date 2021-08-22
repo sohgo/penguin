@@ -5,22 +5,28 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        formData: {},
+        formData: {},   // data to be submitted.
+        authed: false,
+        workData: {},
         responseData: {},
         activeDate: {}, // for DailyInput
     },
     mutations: {
+        /*
         updateFormData(state, payload) {
             state.formData = Object.assign({}, state.formData, payload)
         },
-        updateResponseData(state, payload) {
-            state.responseData = payload
+        */
+        /*
+        createSubmitData(state) {
+            state.submitData = JSON.parse(JSON.stringify(state.formData))
         },
-        updateActiveDate(state, payload) {
-            state.activeDate = payload
-        }
+        */
     },
     actions: {
+    },
+    getters : {
+        isAuthed: state => !!state.authed,
     },
     modules: {
     }

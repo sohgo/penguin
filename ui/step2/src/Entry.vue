@@ -72,7 +72,4 @@ export default {
 </script>
 
 <style>
-.entry-body {
-    background-color: #03AF7A;
-}
 </style>

@@ -5,8 +5,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from typing import Optional, List
-from modelREST import PenRESTStep1Model, PenRESTStep1AckModel
-from modelREST import PenRESTStep2AuthModel, PenRESTStep2Model
+from modelStep1 import PenRESTStep1Model, PenRESTStep1AckModel
+from modelStep2 import PenRESTStep2AuthReqModel, PenRESTStep2Model
 from modelDB import PenDBStep1Model, PenDBStep2Model, HIDDEN_FIELDS
 from modelMM import PenMMRESTRequestModel
 import asyncio
@@ -69,7 +69,7 @@ def api(config):
                 url, logger, config.enable_tls)
         if status != httpcode.HTTP_200_OK:
             raise HTTPException(status_code=httpcode.HTTP_404_NOT_FOUND,
-                                detail=f"xpath not found: {xpath}")
+                                detail=f"invalid xpath")
         if ctype != "application/json":
             raise HTTPException(
                     status_code=httpcode.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -81,19 +81,21 @@ def api(config):
             token: str,
             xpath: Optional[str] = None,
             remove_token: bool = True,
+            check_authed: bool = False,
             ) -> None:
         """
         validate token and raise an exception if not valid.
         """
-        if not xtmap.validate_token(token, xpath, remove_token):
+        if not xtmap.validate_token(token, xpath, remove_token, check_authed):
             logger.error(f"Not acceptable token: token={token} xpath={xpath}")
             raise HTTPException(status_code=httpcode.HTTP_406_NOT_ACCEPTABLE,
-                                detail=f"token not acceptable")
+                                detail=f"invalid token")
 
     async def validate_token_and_get_item(
             token: str,
             xpath: str,
             remove_token: bool = True,
+            check_authed: bool = False,
             ) -> dict:
         """
         validation of token and xpath.
@@ -102,72 +104,8 @@ def api(config):
         """
         logger.debug(f"validate token: {token}")
         # raise an exception if token is not valid.
-        validate_token(token, xpath, remove_token)
+        validate_token(token, xpath, remove_token, check_authed)
         return await get_item_by_xpath(xpath)
-
-    #
-    # API
-    #
-    @app.get(
-        "/1",
-        response_description="Get a page for STEP1.",
-        response_class=HTMLResponse,
-        status_code=httpcode.HTTP_200_OK,
-    )
-    async def get_step1(request: Request):
-        logger.debug(f"APP get_step1")
-        token = xtmap.generate_token()
-        # read file and embed token.
-        html_content = None
-        async with aiofile.async_open(STEP1_INDEX_FILE, "r") as fd:
-            html_content = await fd.read()
-        return html_content.replace("__HKD_TOKEN__",token)
-
-    @app.post(
-        "/1",
-        response_description="Add new item as STEP1.",
-        response_model=PenRESTStep1AckModel,
-        status_code=httpcode.HTTP_201_CREATED,
-        )
-    async def post_step1(in_data: PenRESTStep1Model = Body(...),
-                        x_csrf_token: Optional[str] = Header(None)):
-        logger.debug(f"APP post_step1: token={x_csrf_token}")
-        in_json = jsonable_encoder(in_data)
-        validate_token(x_csrf_token)
-        # post the info.
-        in_json["pid"] = util.get_hash()
-        in_json["tsStep1"] = util.get_timestamp(config.tz)
-        in_json["xpath"] = util.get_hash()
-        # 3-words-code
-        c3w = cwm.gencode()
-        in_json["c3w_code"] = c3w["code"]
-        in_json["c3w_words"] = c3w["words"]
-        # generate auth code.
-        in_json["authcode"] = "-".join([str(randint(1000,9999))
-                                        for i in range(3)])
-        # tiny check
-        PenDBStep1Model.parse_obj(in_json)
-        # submitting
-        logger.debug(f"POST DB: trying: {in_json}")
-        url = f"{config.db_api_url}/1"
-        status, content = await util.post_item(url, in_json,
-                                               enable_tls=config.enable_tls)
-        if status != httpcode.HTTP_201_CREATED:
-            raise HTTPException(status_code=httpcode.HTTP_406_NOT_ACCEPTABLE,
-                                detail=f"not acceptable")
-        # submit a request to the reporter for sending a mail out.
-        mm_json = jsonable_encoder(PenMMRESTRequestModel.parse_obj(in_json))
-        logger.debug(f"POST MM: trying: {mm_json}")
-        url = f"{config.mm_api_url}/m"
-        status, content = await util.post_item(url, mm_json,
-                                               enable_tls=config.enable_tls)
-        if status != 200:
-            raise HTTPException(status_code=httpcode.HTTP_502_BAD_GATEWAY,
-                                detail=f"accepted, but error on mail.")
-        # reply json
-        out_json = jsonable_encoder(in_data)
-        out_json["xpath"] = in_json["xpath"]
-        return out_json
 
     @app.get(
         "/2/x/{xpath}",
@@ -175,7 +113,7 @@ def api(config):
         response_class=HTMLResponse,
         status_code=httpcode.HTTP_200_OK,
     )
-    async def get_step2_by_xpath(xpath: str):
+    async def get_step2_by_xpath(xpath: str, em: str = None):
         logger.debug(f"APP get_step2_by_xpath: {xpath}")
         content = await get_item_by_xpath(xpath)
         token = xtmap.generate_token(content["xpath"])
@@ -183,7 +121,13 @@ def api(config):
         html_content = None
         async with aiofile.async_open(STEP2_INDEX_FILE, "r") as fd:
             html_content = await fd.read()
-        return HTMLResponse(content=html_content.replace("__HKD_TOKEN__",token))
+        # make the content.
+        content = html_content.replace("__HKD_TOKEN__", token, 1)
+        if em is not None:
+            content = content.replace("__HKD_GIVEN_EM__", em, 1)
+        if config.google_apikey:
+            content = content.replace("__HKD_GKEY__", config.google_apikey, 1)
+        return HTMLResponse(content)
 
     @app.post(
         "/a",
@@ -191,7 +135,7 @@ def api(config):
         response_model=PenRESTStep2Model,
         status_code=httpcode.HTTP_200_OK,
     )
-    async def auth_access(in_data: PenRESTStep2AuthModel = Body(...),
+    async def auth_access(in_data: PenRESTStep2AuthReqModel = Body(...),
                         x_csrf_token: Optional[str] = Header(None)):
         in_json = jsonable_encoder(in_data)
         logger.debug(f"APP auth_access: {in_json}")
@@ -199,11 +143,12 @@ def api(config):
         content = await validate_token_and_get_item(x_csrf_token, xpath,
                                                     remove_token=False)
         # check if the key contents were valid.
-        if not (content["birthM"] == in_data.birthM and
-                content["birthD"] == in_data.birthD and
+        if not (content["emailAddr"] == in_data.emailAddr and
                 content["authcode"] == in_data.authcode):
             raise HTTPException(status_code=httpcode.HTTP_406_NOT_ACCEPTABLE,
-                                detail=f"not acceptable")
+                                detail=f"invalid authcode")
+        # set authed flag to the token.
+        xtmap.token_set_authed(x_csrf_token)
         # remove hidden fields from the response.
         for k in HIDDEN_FIELDS:
             k in content and content.pop(k)
@@ -212,7 +157,7 @@ def api(config):
     @app.post(
         "/2",
         response_description="Update an item as STEP2.",
-        response_model=PenRESTStep2Model,
+        #response_model=PenRESTStep2Model,
         status_code=httpcode.HTTP_200_OK,
     )
     async def post_step2(in_data: PenRESTStep2Model = Body(...),
@@ -220,7 +165,10 @@ def api(config):
         in_json = jsonable_encoder(in_data)
         logger.debug(f"APP post_step2: {in_json}")
         xpath = in_json["xpath"]
-        old_json = await validate_token_and_get_item(x_csrf_token, xpath)
+        # check and remove token
+        old_json = await validate_token_and_get_item(x_csrf_token, xpath,
+                                                     remove_token=False,
+                                                     check_authed=True)
         # fix the hidden fields to submit.
         for k in HIDDEN_FIELDS:
             if k in old_json:
@@ -243,13 +191,12 @@ def api(config):
                                                enable_tls=config.enable_tls)
         if status == httpcode.HTTP_200_OK:
             # just return in_data as it is.
-            return jsonable_encoder(in_data)
+            return
         else:
             raise HTTPException(status_code=httpcode.HTTP_406_NOT_ACCEPTABLE,
-                                detail="not acceptable")
+                                detail="invalid data submitted")
 
     from fastapi.responses import Response
-    @app.get("/1/favicon.ico")
     @app.get("/2/favicon.ico")
     async def read_file():
         async with aiofile.async_open("./ui/favicon.ico", "rb") as fd:
@@ -257,7 +204,8 @@ def api(config):
         return Response(content=content, media_type="image/vnd.microsoft.icon")
 
     from fastapi.staticfiles import StaticFiles
-    app.mount("/1", StaticFiles(directory="./ui/step1/dist", html=True), name="step1ui")
     app.mount("/2", StaticFiles(directory="./ui/step2/dist", html=True), name="step2ui")
+    app.mount("/s", StaticFiles(directory="./ui/lib", html=True),
+              name="step2uiLib")
 
     return app

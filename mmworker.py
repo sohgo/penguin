@@ -70,18 +70,16 @@ async def _sendmsg(
 
     msg_a = MIMEMultipart("alternative")
     guide_text = f"""
-このメールは患者XXXシステムのご利用を開始した方にお送りしております。
-心当たりがない場合は、お手数ですが破棄して下さい。
-
-{request.name} 様、
+このメールは「{config.mail_sysname}」のご利用を開始した方にお送りしております。
+心当たりがない場合は、お手数ですが破棄して頂けますと幸いです。
 
 下記リンクは、行動履歴入力のためのアドレスです。
 
     {url}
 
 クリックすると認証画面が表示されますので、
-初期登録で入力した {request.name} 様の
-誕生日の月日と下記の認証コードを入力して下さい。
+初期登録で入力したメールアドレスと、
+下記の認証コードを入力して下さい。
 
     {request.authcode}
 
@@ -117,7 +115,7 @@ async def _sendmsg(
   <body>
 
     <div class="preamble">
-        このメールは患者XXXシステムの
+        このメールは「{config.mail_sysname}」の
         ご利用を開始した方にお送りしております。
     </div>
 
@@ -126,8 +124,6 @@ async def _sendmsg(
     </div>
 
     <hr>
-
-    <h3>{request.name} 様、</h3>
 
     <div>
         行動履歴を入力するためには下記のリンクをクリックして下さい。
@@ -142,8 +138,8 @@ async def _sendmsg(
     <div>
 
     </div>
-        初期登録で入力した {request.name} 様の
-        誕生日の月日と下記の認証コードを入力して下さい。
+        初期登録で入力したメールアドレスと、
+        下記の認証コードを入力して下さい。
     </div>
 
     <div class="focus">

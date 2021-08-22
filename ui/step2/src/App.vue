@@ -22,20 +22,6 @@ body {
     -webkit-font-smoothing: antialiased;
     font-size: 0.914rem;
 }.
-.entry-bg {
-    background-color: #03AF7A;
-}
-.basefont {
-    font-family: 'M PLUS Rounded 1c';
-    .wf-roundedmplus1c { font-family: "M PLUS Rounded 1c"; };
-    font-weight: bolder;
-}
-.header {
-    background-color: #03AF7A;
-    color:#FFF;
-    font-size:1rem;
-    font-weight: bold;
-}
 h1 {
     font-size:1.4rem;
     line-height: 1.8rem;
@@ -60,6 +46,31 @@ h3 {
     font-size:1rem;
     font-weight: bold;
 }
+h4 {
+    font-size:0.95rem;
+}
+p {
+    line-height: 180%;
+    font-size: 1rem;
+}
+
+.entry-bg {
+    background-color: #03AF7A;
+}
+.basefont {
+    font-family: 'M PLUS Rounded 1c';
+    .wf-roundedmplus1c { font-family: "M PLUS Rounded 1c"; };
+    font-weight: bolder;
+}
+.header {
+    background-color: #03AF7A;
+    color:#FFF;
+    font-size:1rem;
+    font-weight: bold;
+}
+.entry-body {
+    background-color: #03AF7A;
+}
 .workplace-header {
     padding:6px 0px 6px 8px;
     border-left:6px solid rgb(3 175 122);
@@ -75,14 +86,6 @@ h3 {
     font-weight: bold;
     background-color: #03AF7A;
 }
-h4 {
-    font-size:0.95rem;
-}
-p {
-    line-height: 180%;
-    font-size: 1rem;
-}
-
 .btn-tag{
     margin-top: 8px;
     border: none;

@@ -3,7 +3,6 @@ from pydantic import validator
 from typing import Optional
 
 class PenMMRESTRequestModel(BaseModel):
-    name: str
     xpath: str
     emailAddr: str
     authcode: str

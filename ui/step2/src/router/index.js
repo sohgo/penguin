@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '@/store'
 import Entry from '@/Entry'
 import Auth from '@/Auth'
 import AuthError from '@/AuthError'
@@ -19,62 +20,74 @@ const routes = [
     {
         path: '/',
         name: 'Entry',
-        component: Entry
+        component: Entry,
+        meta: { authRequired: false },
     },
     {
-        path: '/Auth',
-        name: 'Auth',
-        component: Auth
+        path: '/auth',
+        name: 'auth',
+        component: Auth,
+        meta: { authRequired: false }
     },
     {
-        path: '/AuthError',
-        name: 'AuthError',
-        component: AuthError
+        path: '/autherror',
+        name: 'autherror',
+        component: AuthError,
+        meta: { authRequired: false },
     },
     {
-        path: '/Step2Input1',
-        name: 'Step2Input1',
-        component: Step2Input1
+        path: '/input1',
+        name: 'input1',
+        component: Step2Input1,
+        meta: { authRequired: true },
     },
     {
-        path: '/Step2Input2',
-        name: 'Step2Input2',
-        component: Step2Input2
+        path: '/input2',
+        name: 'input2',
+        component: Step2Input2,
+        meta: { authRequired: true },
     },
     {
-        path: '/Step2Input3',
-        name: 'Step2Input3',
-        component: Step2Input3
+        path: '/input3',
+        name: 'input3',
+        component: Step2Input3,
+        meta: { authRequired: true },
     },
     {
-        path: '/Step2Input4',
-        name: 'Step2Input4',
-        component: Step2Input4
+        path: '/daily',
+        name: 'daily',
+        component: Step2Input4,
+        meta: { authRequired: true },
     },
     {
-        path: '/InputDaily',
-        name: 'InputDaily',
-        component: InputDaily
+        path: '/day',
+        name: 'day',
+        component: InputDaily,
+        meta: { authRequired: true },
     },
     {
-        path: '/Step2Break',
-        name: 'Step2Break',
-        component: Step2Break
+        path: '/break',
+        name: 'break',
+        component: Step2Break,
+        meta: { authRequired: true },
     },
     {
-        path: '/End',
-        name: 'End',
-        component: End
+        path: '/end',
+        name: 'end',
+        component: End,
+        meta: { authRequired: true },
     },
     {
-        path: '/Error',
-        name: 'Error',
-        component: Error
+        path: '/error',
+        name: 'error',
+        component: Error,
+        meta: { authRequired: false },
     },
     {
         path: '/:pathMatch(.*)*',
-        name: 'NotFound',
-        component: NotFound
+        name: 'notfound',
+        component: NotFound,
+        meta: { authRequired: false },
     },
 ]
 
@@ -82,6 +95,20 @@ const router = new VueRouter({
     //mode: 'history',
     mode: 'hash',
     routes
+})
+
+router.beforeEach((to, from, next) => {
+    //console.log('route:', to, from, next)
+    if (to.matched.some(r => r.meta.authRequired)) {
+        if (store.getters.isAuthed) {
+            next()
+            return
+        } else {
+            next('/Auth')
+        }
+    } else {
+        next()
+    }
 })
 
 export default router

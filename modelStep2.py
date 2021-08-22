@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr, Extra
 from pydantic import validator
-from typing import Optional
+from typing import Optional, List, Dict
 from datetime import date
 import re
 
@@ -8,177 +8,180 @@ import re
 Model for the communication betwen users and FrontEnd server.
 
     UI                           Server
-    | -- PenRESTStep1Model --> 
-    | <-- PenRESTStep1AckModel --
-    |
-    | -- PenRESTStep2AuthModel -->
+    | -- PenRESTAuthReqModel -->
     | <-- PenRESTStep2Model --
+    |    (only required fields)
     |
     | -- PenRESTStep2Model -->
-    | <-- PenRESTStep2Model --
+    | <-- OK 201 --
 """
 
-class PenRESTStep1Model(BaseModel):
-    name: str
-    birthM: str
-    birthD: str
+class PenRESTStep2AuthReqModel(BaseModel):
     emailAddr: EmailStr
-
-    @validator("birthD")
-    def validate_date(cls, birthD, values):
-        # brief check.
-        # in this stage, accept 2/29 in any year.
-        date(2000, int(values["birthM"]), int(birthD))
-        return birthD
-
-    class Config:
-        extra = Extra.forbid
-        schema_extra = {
-            "example": {
-                "name": "北海太郎",
-                "birthM": "12",
-                "birthD": "25",
-                "emailAddr": "taro@hokkai.do.jp",
-            }
-        }
-
-class PenRESTStep1AckModel(PenRESTStep1Model):
-    """
-    PenRESTStep1Model +
-    """
     xpath: str = Field(min_length=64, max_length=64)
-
-    class Config:
-        extra = Extra.forbid
-        schema_extra = {
-            "example": {
-                "xpath": "dd6fd57989fabca282b257460f8cc9538f7c770e81ef9dc5aaa5e3d7b4d985bd",
-                "name": "北海太郎",
-                "birthM": "12",
-                "birthD": "25",
-                "emailAddr": "taro@hokkai.do.jp",
-            }
-        }
-
-class PenRESTStep2AuthModel(BaseModel):
-    xpath: str = Field(min_length=64, max_length=64)
-    birthM: str
-    birthD: str
     authcode: str
 
     class Config:
         extra = Extra.forbid
         schema_extra = {
             "example": {
+                "emailAddr": "taro@hokkai.do.jp",
                 "xpath": "dd6fd57989fabca282b257460f8cc9538f7c770e81ef9dc5aaa5e3d7b4d985bd",
-                "birthM": "12",
-                "birthD": "25",
                 "authcode": "1234-5678-9012",
             }
         }
 
-class PenRESTStep2Model(PenRESTStep1AckModel):
-    """
-    PenRESTStep1AckModel +
+class Activity(BaseModel):
+    placename: Optional[str]
+    type: Optional[str]
+    profile: Optional[str]
+    detail: Optional[str]
 
-    NOTE: kana, birthY : Step2のPOST以降は必須フィールド。
+class HealthRecordItemModel(BaseModel):
+    question: Optional[str]
+    text: Optional[str]
+
+class DailyActivityWhat(BaseModel):
+    label: Optional[str]
+    text: Optional[str]
+    selected: Optional[List[str]]
+
+class DailyActivityWhen(BaseModel):
+    label: Optional[str]
+    timeFrom: Optional[str]
+    timeTo: Optional[str]
+
+class DailyActivityWhere(BaseModel):
+    text: Optional[str]
+    address: Optional[str]
+
+class DailyActivityWhom(BaseModel):
+    attendants: Optional[List]
+    numPeople: Optional[str]
+
+class DeilyActivityItem(BaseModel):
+    what: DailyActivityWhat
+    when: DailyActivityWhen
+    where: DailyActivityWhere
+    whom: DailyActivityWhom
+    comment: Optional[str]
+
+class PenRESTStep2Model(BaseModel):
     """
-    kana: Optional[str]
-    onsetY: Optional[str]
-    onsetM: Optional[str]
-    onsetD: Optional[str]
-    birthY: Optional[str]
+    once auth has been succeeded, the token in header is checked whether
+    the submission is acceptable or not.
+    so, authtoken is not needed.
+    """
+    emailAddr: EmailStr
+    xpath: str = Field(min_length=64, max_length=64)
+    onsetDate: Optional[str]
+    birthday: Optional[str]
     citizenship: Optional[str]
-    postcode: Optional[str]
-    addrPref: Optional[str]
-    addrCity: Optional[str]
-    # 病歴
-    sick0_c: Optional[bool]
-    sick0_d: Optional[str]
-    sick1_c: Optional[bool]
-    sick1_d: Optional[str]
-    sick2_c: Optional[bool]
-    sick2_d: Optional[str]
-    sick3_c: Optional[bool]
-    sick3_d: Optional[str]
-    sick4_c: Optional[bool]
-    sick4_d: Optional[str]
-    sick5_c: Optional[bool]
-    sick5_d: Optional[str]
-    sick6_c: Optional[bool]
-    sick6_d: Optional[str]
-    sick7_c: Optional[bool]
-    sick7_d: Optional[str]
-    sick8_c: Optional[bool]
-    sick8_d: Optional[str]
-    sick9_c: Optional[bool]
-    sick9_d: Optional[str]
-    sick10_c: Optional[bool]
-    sick10_d: Optional[str]
-    sick11_c: Optional[bool]
-    sick11_d: Optional[str]
-    # XXX needs to add more fields.
-
-    @validator("birthY")
-    def validate_date(cls, birthY, values):
-        if birthY is None:
-            return birthY
-        else:
-            date(int(birthY), int(values["birthM"]), int(values["birthD"]))
-            return birthY
+    sex: Optional[str]
+    citizenship: Optional[str]
+    livingArea: Optional[str]
+    profession: Optional[str]
+    communityLife: Optional[str]
+    attendantName: Optional[str]
+    attendantRelationship: Optional[str]
+    attendantAddress: Optional[str]
+    attendantPhone: Optional[str]
+    activities: Optional[List[Activity]]
+    healthRecord: Optional[Dict[str, HealthRecordItemModel]]
+    locations: Optional[Dict[str, List[bool]]]
+    dailyActivities: Optional[Dict[str, List[DeilyActivityItem]]]
 
     @classmethod
-    def validate_strnum(cls, v, size):
+    def validate_datestr(cls, v):
+        """
+        v: e.g. "1967-12-25"
+        """
         if v is None:
-            return v
+            return None
         else:
-            regex = f"^\d{{{size}}}$"
-            if re.match(regex, v):
+            if len(v) != 10:
+                return False
+            try:
+                y, m, d = v.split('-')
+                date(int(y), int(m), int(d))
                 return v
-            else:
-                raise ValueError(f"ERROR: invalid onset: {v}")
+            except:
+                return False
 
-    @validator("onsetY", pre=True)
-    def validate_onsetY(cls, v):
-        return cls.validate_strnum(v, 4)
-
-    @validator("onsetM", "onsetD", pre=True)
-    def validate_onsetM(cls, v):
-        return cls.validate_strnum(v, 2)
-
-    @validator("postcode", pre=True)
-    def validate_postcode(cls, v):
-        if v:
-            if re.match("^(\d{7}|\d{3}-\d{4})$", v):
-                return v.replace("-","")
-            else:
-                raise ValueError(f"ERROR: invalid postcode: {v}")
+    @validator("onsetDate", pre=True)
+    def validate_onsetDate(cls, v):
+        ret = cls.validate_datestr(v)
+        if ret == False:
+            raise ValueError(f"ERROR: invalid onsetDate: {v}")
         else:
             return v
-
-    @validator("kana", pre=True)
-    def validate_kana(cls, v):
-        if v is None:
-            return v
-        else:
-            if re.match("^[ぁ-ゔー\s\u3000・]*$", text):
-                return v
-            else:
-                raise ValueError(f"ERROR: invalid kana: {v}")
 
     class Config:
         extra = Extra.forbid
         schema_extra = {
             "example": {
-                "xpath": "dd6fd57989fabca282b257460f8cc9538f7c770e81ef9dc5aaa5e3d7b4d985bd",
-                "name": "北海太郎",
-                "kana": "ほっかいたろう",
-                "birthY": "1999",
-                "birthM": "12",
-                "birthD": "25",
                 "emailAddr": "taro@hokkai.do.jp",
+                "xpath": "dd6fd57989fabca282b257460f8cc9538f7c770e81ef9dc5aaa5e3d7b4d985bd",
+                "authcode": "1234-5678-9012",
+                "onsetDate": "2021-08-01",
+                "birthday": "1967-12-25",
+                "sex": "男",
                 "citizenship": "日本",
-                "postcode": "0100001",
+                "livingArea": "北海道札幌市",
+                "profession": "会社員",
+                "communityLife": "特になし",
+                "attendantName": "",
+                "attendantRelationship": "",
+                "attendantAddress": "",
+                "attendantPhone": "",
+                "activityList": [
+                    {
+                        "placename": "株式会社〇〇",
+                        "type": "会社での業務",
+                        "profile": "人にあまり会わない活動・仕事（リモートワークを含む）",
+                        "detail": "",
+                    }
+                ],
+                "healthRecord": {
+                    "該当しない": {
+                        "question": None,
+                        "text": None
+                    },
+                    "糖尿病": {
+                        "question": "具体的に教えてください",
+                        "text": "注射をしている"
+                    }
+                },
+                "locations": {
+                    "〇〇総合病院": [ False, True, False ],
+                    "〇〇タクシー": [ True, True, True ],
+                },
+                "dailyActivities": [
+                    {
+                        "date": "2021-07-31",
+                        "detail": {
+                            "what": {
+                                "label": "",
+                                "text": "",
+                                "selected": "",
+                            },
+                            "when": {
+                                "label": "",
+                                "timeFrom": "",
+                                "timeTo": "",
+                            },
+                            "where": {
+                                "text": "",
+                                "address": "",
+                            },
+                            "whom": {
+                                "attendants": [ "", "" ],
+                                "numPeople": "",
+                            },
+                            "comment": ""
+                        },
+                    }
+                ]
             }
         }
 

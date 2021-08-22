@@ -12,6 +12,7 @@ const async_post = async function(url, body) {
         console.log(`POST: ${url}`)
         console.log(`BODY: ${json_data}`)
     }
+    // call fetch
     const result = await fetch(url, {
         method: 'POST',
         headers: {
@@ -27,7 +28,7 @@ const async_post = async function(url, body) {
         if (process.env.VUE_APP_DEBUG) {
             window.alert('通信エラーがおきました。', error)
         }
-        return { code: -1, data: {} }
+        return { code: -1, data: { detail: `communication error: ${error}`} }
     })
     // result
     if (process.env.VUE_APP_DEBUG) {

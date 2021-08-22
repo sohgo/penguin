@@ -1,10 +1,25 @@
 <template>
     <v-app>
-        <v-main class="pa-5 basecolor basefont">
+        <v-app-bar color="#03AF7A" class="text-center"
+                   elevation="0"
+                   dense
+                   app>
+            <v-btn icon disabled></v-btn>
+            <v-spacer></v-spacer>
+            <v-app-bar-title class="white--text">
+                エラー
+            </v-app-bar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon disabled></v-btn>
+        </v-app-bar>
 
-            <h2 class="pb-5">
-                URLに誤りがあります。
-            </h2>
+        <v-main>
+
+            <div class="mx-3 my-5">
+                <h1 class="my-3">
+                    URLに誤りがあります。
+                </h1>
+            </div>
 
         </v-main>
     </v-app>

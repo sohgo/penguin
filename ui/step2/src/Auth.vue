@@ -29,6 +29,16 @@
                         class="mx-3"
                         lazy-validation
                         >
+
+                    <!-- メールアドレス -->
+                    <v-text-field
+                        label="メールアドレス"
+                        class="mt-3"
+                        v-model.lazy="formData.emailAddr"
+                        :rules="emailAddrRules"
+                        :disabled="givenEmailAddr"
+                    ></v-text-field>
+
                     <!-- 認証コード -->
                     <v-row class="mt-3">
                         <v-col class="mt-3 mx-0">認証コード</v-col>
@@ -42,6 +52,7 @@
                                 v-model.lazy="ac1"
                                 :rules="acRequired"
                                 placeholder="0000"
+                                @input="ac1ScpecialInput()"
                                 >
                             </v-text-field>
                         </v-col>
@@ -68,24 +79,18 @@
                             </v-text-field>
                         </v-col>
                     </v-row>
-                    <!-- メールアドレス -->
-                    <v-text-field
-                        label="メールアドレス"
-                        class="mt-3"
-                        v-model.lazy="formData.emailAddr"
-                        :rules="emailAddrRules"
-                    ></v-text-field>
 
                 </v-form>
 
-                <v-btn class="pa-5"
-                       color="#03AF7A"
-                       @click="sendAuth"
-                       block
-                       >
-                    <span class="pa-2 white--text font-large">
+                <v-btn
+                    class="white--text pa-5"
+                    color="#03AF7A"
+                    @click="sendAuth"
+                    block
+                >
+                    <h3>
                         送信する
-                    </span>
+                    </h3>
                 </v-btn>
             </div>
         </v-main>
@@ -102,12 +107,10 @@ export default {
     data() {
         return {
             valid: false,
-            selectRequired: [utils.selectRequired],
-            birthMList: utils.monthsList,
-            birthDList: utils.daysList,
+            givenEmailAddr: false,
             acRequired: [
                 v => !!v || '認証コードは必須です。',
-                v => /\d{4}/.test(v) || '4桁の数字を入力して下さい。'
+                v => /^\d{4}$/.test(v) || '4桁の数字を入力して下さい。'
             ],
             emailAddrRules: [utils.emailAddrCheck],
             formData: {},
@@ -122,20 +125,34 @@ export default {
                 // make authcode properly.
                 this.formData.authcode = `${this.ac1}-${this.ac2}-${this.ac3}`
                 // submit formData.
-                let url = `${process.env.VUE_APP_SERVER_URL}/a`
-                let response = await utils.async_post(url, this.formData)
-                response.code = 200
-                if (response.code == 200) {
-                    this.$store.state.formData = response.data
-                    this.$router.push('/Step2Input1')
-                } else if (response.code == 406) {
-                    this.$router.push('/AuthError')
-                } else {
-                    this.$store.commit('updateResponseData', response)
-                    this.$router.push('/Error')
-                }
+                utils.async_post(`${process.env.VUE_APP_SERVER_URL}/a`,
+                    this.formData)
+                    .then(ret => {
+                        if (ret.code == 200) {
+                            this.$store.state.authed = true
+                            this.$store.state.formData = ret.data
+                            this.$router.push('/input1')
+                        } else if (ret.code == 406) {
+                            this.$store.state.responseData = ret
+                            this.$router.push('/autherror')
+                        } else {
+                            this.$store.state.responseData = ret
+                            this.$router.push('/error')
+                        }
+                    })
             }
         },
+        ac1ScpecialInput: function() {
+            // if full authcode is inputed (e.g. copy&paste),
+            // then split and put them.
+            let value = this.ac1
+            if (/^\d{4}-\d{4}-\d{4}$/.test(value)) {
+                let vs = value.split('-')
+                this.ac1 = vs[0]
+                this.ac2 = vs[1]
+                this.ac3 = vs[2]
+            }
+        }
     },
     watch: {
         ac1(v) { if (v.length >= 4) { this.$refs.ac2.focus() } },
@@ -143,8 +160,15 @@ export default {
     },
     mounted: function() {
         this.formData = this.$store.state.formData
+        // set the given email address if needed.
+        let em = document.querySelector('meta[name="X-HKD-GIVEN-EM"]').getAttribute('content')
+        if (em != "__HKD_GIVEN_EM__") {
+            this.formData.emailAddr = em
+            this.givenEmailAddr = true
+        }
+        // get xpath from the URL.
         let url = document.URL
-        this.formData.xpath = url.slice(url.indexOf('/2/x/')+5, url.indexOf('#/Auth'))
+        this.formData.xpath = url.substr(url.indexOf('/2/x/')+5, 64)
         console.log("formData", this.formData)
     }
 }

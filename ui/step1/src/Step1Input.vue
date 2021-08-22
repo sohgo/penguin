@@ -76,7 +76,13 @@ export default {
                 let url = `${process.env.VUE_APP_SERVER_URL}/1`
                 let response = await utils.async_post(url, this.formData)
                 if (response.code == 201 && response.data.xpath) {
-                    this.$store.state.url = `${process.env.VUE_APP_SERVER_URL}/2/x/${response.data.xpath}`
+                    //this.$store.state.url = `${process.env.VUE_APP_SERVER_URL}/2/x/${response.data.xpath}`
+                    if (response.data.redirectHost) {
+                        this.$store.state.url = `${response.data.redirectHost}`
+                    } else {
+                        this.$store.state.url = `${process.env.VUE_APP_SERVER_URL}`
+                    }
+                    this.$store.state.url += `/2/x/${response.data.xpath}?em=${this.formData.emailAddr}`
                     // 成功したら以降の操作を無効にするためにformDataを消す。
                     this.$store.state.formData = {}
                     this.$router.push('/Step1End')
