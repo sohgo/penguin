@@ -21,7 +21,7 @@ new Vue({
             if (b > -1) {
                 url = url.substr(a, b-a)
             } else {
-                url = url.href.substr(a)
+                url = url.substr(a)
             }
         }
         window.history.pushState({}, '新型コロナの調査', url)
