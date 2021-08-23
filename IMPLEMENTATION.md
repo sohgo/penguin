@@ -11,7 +11,7 @@
 
 ## コンポーネント概略図
 
-<img alt="pen's components" src="doc/pen-arch-20210611a.png" height="320">
+<img alt="penguin components" src="doc/pen-arch-20210823-small.png" height="320">
 
 [Docker](https://github.com/tanupoo/proto-pen-docker)を使って動かした場合
 
