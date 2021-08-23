@@ -13,7 +13,7 @@
 
 <img alt="penguin components" src="doc/pen-arch-20210823-small.png" height="320">
 
-[Docker](https://github.com/tanupoo/proto-pen-docker)を使って動かした場合
+[Docker](https://github.com/tanupoo/penguin-docker)を使って動かした場合
 
 フローは[こちら](https://docs.google.com/drawings/d/1w4VkZPMz8jnvWTPGRehubjcRTKzPcMMFceEwjbiA9vM/edit)。
 アクセス権が欲しい方は連絡下さい。検討します。
