@@ -15,6 +15,8 @@ class PenMMConfigModel(BaseModel):
     mail_bcc: Optional[str]
     mail_subject: str
     mail_sysname: str
+    mail_body_text_path: str
+    mail_body_html_path: str
     mail_reference: Optional[str]
     public_fe_url: str
     server_cert: Optional[str]

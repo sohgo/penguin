@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from modelMM import PenMMRESTRequestModel
 from mmconf import PenMMConfigModel
 from typing import Optional
+import aiofile
 # qrcode
 import qrcode
 from io import BytesIO
@@ -15,6 +16,11 @@ from base64 import b64encode
 # mail
 import aiosmtplib
 import ssl
+
+async def read_file(file_path):
+    async with aiofile.async_open(file_path, "r") as fd:
+        content = await fd.read()
+        return content
 
 class SendMessage():
     def __init__(self, config):
@@ -69,116 +75,16 @@ async def _sendmsg(
     mime_msg["Subject"] = config.mail_subject
 
     msg_a = MIMEMultipart("alternative")
-    guide_text = f"""
-このメールは「{config.mail_sysname}」のご利用を開始した方にお送りしております。
-心当たりがない場合は、お手数ですが破棄して頂けますと幸いです。
 
-下記リンクは、行動履歴入力のためのアドレスです。
-
-    {url}
-
-クリックすると認証画面が表示されますので、
-初期登録で入力したメールアドレスと、
-下記の認証コードを入力して下さい。
-
-    {request.authcode}
-
-その後、行動履歴を入力する画面に進みます。
-
-添付のQRコードは上記アドレスと同じものです。
-必要であれば利用して下さい。
-
-下記3つの「ひらがなコード」は看護師に尋ねられた場合にお伝え下さい。
-
-    {request.c3w_words}
-
-お手数をおかけいたしますが、
-ご協力の程、よろしくお願いいたします。
-
-連絡先: xxx at xxx.xxx
-"""
-
+    guide_text_template = await read_file(config.mail_body_text_path)
+    guide_text = guide_text_template.format(**vars())
     msg_t = MIMEText(guide_text, "plain")
     msg_a.attach(msg_t)
 
-    guide_html = f"""
-<html>
-  <head>
-    <style>
-      div {{ margin: 0 0 10px 2px }}
-      .focus {{ margin: 5px 0 15px 15px; font-size: large; font-weight: bold; }}
-      .preamble {{ margin: 0 auto 10px 5px; font-size: x-small; }}
-      #qrcode {{ display: block; margin-left:auto; margin-right:auto }}
-      hr {{ width: 80%; margin: 10px auto 10px 0 }}
-    </style>
-  </head>
-  <body>
-
-    <div class="preamble">
-        このメールは「{config.mail_sysname}」の
-        ご利用を開始した方にお送りしております。
-    </div>
-
-    <div class="preamble">
-        心当たりがない場合は、お手数ですが破棄して頂けますと幸いです。
-    </div>
-
-    <hr>
-
-    <div>
-        行動履歴を入力するためには下記のリンクをクリックして下さい。
-    </div>
-
-    <div class="focus">
-        <a href="{url}">行動履歴入力へのリンク</a>
-    </div>
-
-    <div>
-        クリックすると認証画面が表示されます。
-    <div>
-
-    </div>
-        初期登録で入力したメールアドレスと、
-        下記の認証コードを入力して下さい。
-    </div>
-
-    <div class="focus">
-        {request.authcode}
-    </div>
-
-    <div>
-        その後、行動履歴を入力する画面に進みます。
-    </div>
-
-    <div>
-        添付のQRコードは上記アドレスと同じものです。
-        必要であれば利用して下さい。
-    </div>
-
-    <div>
-        下記3つの「ひらがなコード」は看護師に尋ねられた場合にお伝え下さい。
-    </div>
-
-    <div class="focus">
-        {request.c3w_words}
-    </div>
-
-    <div>
-        お手数をおかけいたしますが、
-        ご協力の程、よろしくお願いいたします。
-    </div>
-
-    <div>
-        {config.mail_reference}
-    </div>
-
-    <div>
-        <img id="qrcode" src="data:image/png;base64,{qrcode_b64}" />
-    </div>
-
-  </body>
-</html>
-    """
+    guide_html_template = await read_file(config.mail_body_html_path)
+    guide_html = guide_html_template.format(**vars())
+    print(guide_text)
+    print(guide_html)
     msg_a.attach(MIMEText(guide_html, "html"))
     mime_msg.attach(msg_a)
 
