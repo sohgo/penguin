@@ -16,8 +16,6 @@ from random import randint
 from xtoken_map import XTokenMap
 import codeNwords
 
-STEP1_INDEX_FILE = "ui/step1/dist/index.html"
-
 def api(config):
 
     logger = config.logger
@@ -84,7 +82,8 @@ def api(config):
         token = xtmap.generate_token()
         # read file and embed token.
         html_content = None
-        async with aiofile.async_open(STEP1_INDEX_FILE, "r") as fd:
+        async with aiofile.async_open(f"{config.ui_step1_path}/index.html",
+                                      "r") as fd:
             html_content = await fd.read()
         return html_content.replace("__HKD_TOKEN__",token)
 
@@ -136,14 +135,7 @@ def api(config):
             out_json["redirectHost"] = config.public_fe_url
         return out_json
 
-    from fastapi.responses import Response
-    @app.get("/1/favicon.ico")
-    async def read_file():
-        async with aiofile.async_open("./ui/favicon.ico", "rb") as fd:
-            content = await fd.read()
-        return Response(content=content, media_type="image/vnd.microsoft.icon")
-
     from fastapi.staticfiles import StaticFiles
-    app.mount("/1", StaticFiles(directory="./ui/step1/dist", html=True), name="step1ui")
+    app.mount("/1", StaticFiles(directory=config.ui_step1_path, html=True), name="step1ui")
 
     return app

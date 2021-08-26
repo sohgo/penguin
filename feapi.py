@@ -16,9 +16,6 @@ from random import randint
 from xtoken_map import XTokenMap
 import codeNwords
 
-STEP1_INDEX_FILE = "ui/step1/dist/index.html"
-STEP2_INDEX_FILE = "ui/step2/dist/index.html"
-
 def api(config):
 
     logger = config.logger
@@ -119,7 +116,8 @@ def api(config):
         token = xtmap.generate_token(content["xpath"])
         # read file and embed token.
         html_content = None
-        async with aiofile.async_open(STEP2_INDEX_FILE, "r") as fd:
+        async with aiofile.async_open(f"{config.ui_step2_path}/index.html",
+                                      "r") as fd:
             html_content = await fd.read()
         # make the content.
         content = html_content.replace("__HKD_TOKEN__", token, 1)
@@ -196,14 +194,7 @@ def api(config):
             raise HTTPException(status_code=httpcode.HTTP_406_NOT_ACCEPTABLE,
                                 detail="invalid data submitted")
 
-    from fastapi.responses import Response
-    @app.get("/2/favicon.ico")
-    async def read_file():
-        async with aiofile.async_open("./ui/favicon.ico", "rb") as fd:
-            content = await fd.read()
-        return Response(content=content, media_type="image/vnd.microsoft.icon")
-
     from fastapi.staticfiles import StaticFiles
-    app.mount("/2", StaticFiles(directory="./ui/step2/dist", html=True), name="step2ui")
+    app.mount("/2", StaticFiles(directory=config.ui_step2_path, html=True), name="step2ui")
 
     return app

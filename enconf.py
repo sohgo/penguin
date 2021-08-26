@@ -20,6 +20,7 @@ class PenEnConfigModel(BaseModel):
     server_cert: Union[str, None]
     enable_tls: bool = True      # overwrite later.
     status_report_interval: int = 600   # 10 minutes
+    ui_step1_path: str
     logger: Any
     loop: Any
 

@@ -20,6 +20,7 @@ class PenFeConfigModel(BaseModel):
     enable_tls: bool = True      # overwrite later.
     status_report_interval: int = 600   # 10 minutes
     google_apikey: str
+    ui_step2_path: str
     logger: Any
     loop: Any
 
