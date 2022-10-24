@@ -150,21 +150,25 @@
 
 ## Adminのフロー
 
-保健師がダウンロードするフロー
+- 注意: C3WはURLエンコードすること。
+- 保健師がダウンロードするフロー
+
 ```
     Client                      Admサーバ
       --- HTTP /dl/3-WORD-CODE -->
       <-- PenAdmDownloadResponseModel ---
 ```
 
-研究サーバにコピーするフロー
+- 研究サーバにコピーするフロー
+
 ```
     Client                      Admサーバ
       <-- POST /copy PenAdmCopyReqModel --
       --- HTTP 200 OK -->
 ```
 
-統計情報を取得するフロー
+- 統計情報を取得するフロー
+
 ```
     Client                      Admサーバ
       --- GET /stat -->
