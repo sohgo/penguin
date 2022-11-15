@@ -76,7 +76,6 @@ class PenRESTStep2Model(BaseModel):
     xpath: str = Field(min_length=64, max_length=64)
     onsetDate: Optional[str]
     birthday: Optional[str]
-    citizenship: Optional[str]
     sex: Optional[str]
     citizenship: Optional[str]
     livingArea: Optional[str]
