@@ -22,8 +22,8 @@ docker run --rm --name pen-mongo --publish 27017:27017 --volume mongodb:/data/db
 ```
 
 - 下記5つのモジュールを動かす。
-    + enmain.py: エントリ入力用バックエンドモジュール
-    + femain.py: 患者情報入力用バックエンドモジュール
+    + enmain.py: エントリ入力(step1)用バックエンドモジュール
+    + femain.py: 患者情報入力(step2)用バックエンドモジュール
     + mmmain.py: メール送信モジュール
     + dbmain.py: dbインターフェイスモジュール
     + admmain.py: 管理インターフェイスモジュール
