@@ -83,8 +83,8 @@ async def _sendmsg(
 
     guide_html_template = await read_file(config.mail_body_html_path)
     guide_html = guide_html_template.format(**vars())
-    print(guide_text)
-    print(guide_html)
+    config.logger.debug(f"TEXT: {guide_text}")
+    config.logger.debug(f"HTML: {guide_html}")
     msg_a.attach(MIMEText(guide_html, "html"))
     mime_msg.attach(msg_a)
 
