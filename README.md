@@ -8,7 +8,7 @@ UIは[こちら](https://github.com/tanupoo/penguin-ui)。
 ## NOTE
 
 **重要**
-今後は https://github.com/ffhs-dev で開発を進めることになりました。
+2023年5月以降は https://github.com/ffhs-dev で開発を進めることになりました。
 FFHSはプライベートリポジトリなのでコードを見ることはできません。
 ですので、このリポジトリは参照用として残しておきます。
 
